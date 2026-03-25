@@ -1,0 +1,477 @@
+/* ============================================================
+   DRIVER TRACKING - Interface type Woopit/Tournées
+   Layout carte + panneau latéral avec timeline
+   ============================================================ */
+
+:root {
+  --tracking-primary: #051c3e;
+  --tracking-accent: #ff6a1d;
+  --tracking-success: #00c27e;
+  --tracking-info: #4285f4;
+  --tracking-warning: #ff9a3d;
+  --tracking-border: rgba(5, 28, 62, 0.1);
+  --tracking-bg: #f8f9fb;
+}
+
+.tracking-page {
+  padding: 0;
+  max-width: 100%;
+  height: calc(100vh - 60px - 80px); /* Header + BottomNav */
+  overflow: hidden;
+}
+
+/* ══ LAYOUT PRINCIPAL ═════════════════════════════════════ */
+.tracking-layout {
+  display: grid;
+  grid-template-columns: 400px 1fr;
+  height: 100%;
+  background: var(--tracking-bg);
+}
+
+/* ══ PANNEAU LATÉRAL (gauche) ════════════════════════════= */
+.tracking-sidebar {
+  background: #fff;
+  border-right: 1px solid var(--tracking-border);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  height: 100%;
+}
+
+.tracking-sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.tracking-sidebar::-webkit-scrollbar-track {
+  background: rgba(5, 28, 62, 0.04);
+}
+
+.tracking-sidebar::-webkit-scrollbar-thumb {
+  background: rgba(5, 28, 62, 0.15);
+  border-radius: 3px;
+}
+
+/* En-tête mission */
+.mission-header {
+  padding: 24px;
+  border-bottom: 1px solid var(--tracking-border);
+}
+
+.mission-header__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.mission-id {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #6b7f99;
+  background: rgba(5, 28, 62, 0.06);
+  padding: 4px 10px;
+  border-radius: 6px;
+  letter-spacing: 0.05em;
+}
+
+.mission-status {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.mission-status--in_progress {
+  background: rgba(255, 154, 61, 0.12);
+  color: #c6531a;
+}
+
+.mission-status--assigned {
+  background: rgba(66, 133, 244, 0.1);
+  color: #174e9b;
+}
+
+.mission-status--completed,
+.mission-status--delivered {
+  background: rgba(0, 194, 126, 0.1);
+  color: #0b5c2c;
+}
+
+.mission-status--unknown {
+  background: rgba(5, 28, 62, 0.06);
+  color: #4a5c74;
+}
+
+.mission-title {
+  margin: 0 0 10px;
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--tracking-primary);
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.mission-customer {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #6b7f99;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mission-customer svg {
+  flex-shrink: 0;
+  opacity: 0.6;
+}
+
+/* Timeline des étapes */
+.mission-timeline {
+  padding: 24px;
+  border-bottom: 1px solid var(--tracking-border);
+  flex: 1;
+}
+
+.timeline-title {
+  margin: 0 0 20px;
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #6b7f99;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.timeline-step {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.timeline-step__marker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.timeline-step__dot {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #fff;
+  background: var(--tracking-info);
+  z-index: 1;
+}
+
+.timeline-step--start .timeline-step__dot {
+  background: var(--tracking-info);
+}
+
+.timeline-step--waypoint .timeline-step__dot {
+  background: #b8c8db;
+  font-size: 0.75rem;
+  width: 24px;
+  height: 24px;
+}
+
+.timeline-step--end .timeline-step__dot {
+  background: var(--tracking-success);
+}
+
+.timeline-step__line {
+  width: 2px;
+  flex: 1;
+  min-height: 40px;
+  background: linear-gradient(180deg, rgba(66, 133, 244, 0.3) 0%, rgba(0, 194, 126, 0.3) 100%);
+  margin-top: 4px;
+}
+
+.timeline-step--end .timeline-step__line {
+  display: none;
+}
+
+.timeline-step__content {
+  padding: 4px 0 24px;
+  flex: 1;
+}
+
+.timeline-step__label {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #6b7f99;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 6px;
+}
+
+.timeline-step__address {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--tracking-primary);
+  line-height: 1.4;
+}
+
+/* Métriques */
+.mission-metrics {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border-bottom: 1px solid var(--tracking-border);
+}
+
+.metric-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  background: rgba(5, 28, 62, 0.03);
+  border-radius: 10px;
+  border: 1px solid rgba(5, 28, 62, 0.06);
+}
+
+.metric-card svg {
+  color: #6b7f99;
+  flex-shrink: 0;
+}
+
+.metric-card--revenue {
+  background: rgba(255, 106, 29, 0.05);
+  border-color: rgba(255, 106, 29, 0.15);
+}
+
+.metric-card--revenue svg {
+  color: var(--tracking-accent);
+}
+
+.metric-card__content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.metric-card__value {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--tracking-primary);
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+.metric-card--revenue .metric-card__value {
+  color: var(--tracking-accent);
+}
+
+.metric-card__label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #6b7f99;
+}
+
+/* Actions */
+.mission-actions {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: rgba(5, 28, 62, 0.02);
+}
+
+.action-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 16px 20px;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.action-button--primary {
+  background: linear-gradient(135deg, #051c3e 0%, #174e9b 100%);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(5, 28, 62, 0.2);
+}
+
+.action-button--primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(5, 28, 62, 0.3);
+}
+
+.action-button--secondary {
+  background: transparent;
+  color: #6b7f99;
+  border: 1.5px solid var(--tracking-border);
+}
+
+.action-button--secondary:hover {
+  background: rgba(5, 28, 62, 0.04);
+  border-color: var(--tracking-primary);
+  color: var(--tracking-primary);
+}
+
+/* ══ CARTE GPS (droite) ══════════════════════════════════= */
+.tracking-map-zone {
+  display: flex;
+  flex-direction: column;
+  background: var(--tracking-bg);
+  height: 100%;
+}
+
+.map-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  background: #fff;
+  border-bottom: 1px solid var(--tracking-border);
+}
+
+.map-title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--tracking-primary);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.map-title svg {
+  color: #6b7f99;
+}
+
+.map-live-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--tracking-success);
+}
+
+.map-live-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--tracking-success);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.2); }
+}
+
+.map-container {
+  flex: 1;
+  position: relative;
+  margin: 16px;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(5, 28, 62, 0.08);
+}
+
+/* ══ RESPONSIVE ═══════════════════════════════════════════ */
+@media (max-width: 1024px) {
+  .tracking-layout {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+  }
+
+  .tracking-sidebar {
+    max-height: 50vh;
+    border-right: none;
+    border-bottom: 1px solid var(--tracking-border);
+  }
+
+  .map-container {
+    margin: 12px;
+  }
+}
+
+@media (max-width: 768px) {
+  .tracking-page {
+    height: auto;
+    min-height: calc(100vh - 60px - 80px);
+  }
+
+  .tracking-layout {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .tracking-sidebar {
+    max-height: none;
+  }
+
+  .mission-header {
+    padding: 20px;
+  }
+
+  .mission-title {
+    font-size: 1.2rem;
+  }
+
+  .mission-timeline,
+  .mission-metrics,
+  .mission-actions {
+    padding: 20px;
+  }
+
+  .map-container {
+    min-height: 400px;
+  }
+}
+
+@media (max-width: 480px) {
+  .mission-header,
+  .mission-timeline,
+  .mission-metrics,
+  .mission-actions {
+    padding: 16px;
+  }
+
+  .mission-title {
+    font-size: 1.1rem;
+  }
+
+  .timeline-step__address {
+    font-size: 0.85rem;
+  }
+
+  .metric-card {
+    padding: 12px 14px;
+  }
+
+  .metric-card__value {
+    font-size: 1.1rem;
+  }
+
+  .map-container {
+    min-height: 300px;
+    margin: 12px;
+  }
+}
