@@ -1,8 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { BrandHeader } from '../components/BrandHeader'
-import { BottomNav } from '../components/BottomNav'
-import '../App.css'
+import '../css/pages/DriverTracking.css'
 import { MapRoute } from '../components/MapRoute'
 import { getCurrentTrackingMission, clearCurrentTrackingMission } from '../utils/storage'
 
@@ -67,105 +65,107 @@ export function DriverTracking() {
     navigate('/driver/missions')
   }
 
+  const statusLabel = mission?.status === 'in_progress' ? 'En cours'
+    : mission?.status === 'completed' ? 'Terminée'
+    : mission?.status === 'assigned' ? 'Assignée'
+    : 'En attente'
+
   return (
-    <div className="app driver-dashboard">
-      <BrandHeader />
-      <main className="page driver-dashboard__page tracking-page">
-        {/* En-tête très léger au-dessus du layout deux colonnes */}
-        <section className="tracking-header-card">
-          <div className="tracking-header-main">
-            <p className="tracking-kicker">Suivi GPS</p>
-          </div>
-        </section>
-
-        {/* Layout deux colonnes : panneau à gauche, carte à droite */}
-        <div className="tracking-main-grid">
-          {/* Panneau gauche : infos trajet + actions */}
-          <section className="tracking-summary-card">
-            <div className="tracking-mission-header">
-              <div>
-                <h2 className="tracking-mission-title">{mission?.title || 'Commande en cours'}</h2>
-                <p className="tracking-mission-meta">
-                  Bus / Camion : {mission?.id || 'N/A'} • Client : {mission?.customer || '-'}
-                </p>
-              </div>
-              <div className="tracking-mission-aside">
-                <span className="tracking-tag">{mission?.volumeLabel || 'Chargement'}</span>
-                <span className={`status-pill status-pill--${mission?.status || 'unknown'}`}>
-                  {mission?.status || 'inconnue'}
-                </span>
-              </div>
-            </div>
-
-            <div className="tracking-summary-main">
-              <div className="tracking-summary-row">
-                <div>
-                  <span className="tracking-label">Récupération</span>
-                  <p className="tracking-value">{mission?.pickup}</p>
-                </div>
-                <div>
-                  <span className="tracking-label">Livraison</span>
-                  <p className="tracking-value">{mission?.dropoff}</p>
-                </div>
-              </div>
-              <div className="tracking-summary-row tracking-summary-row--metrics">
-                <div>
-                  <span className="tracking-label">Distance</span>
-                  <p className="tracking-value">{mission?.distance || 0} km</p>
-                </div>
-                <div>
-                  <span className="tracking-label">Durée estimée</span>
-                  <p className="tracking-value">{mission?.duration || 0} min</p>
-                </div>
-                <div>
-                  <span className="tracking-label">Gain</span>
-                  <p className="tracking-value">{mission?.price || 0} FCFA</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="tracking-actions">
-              <button className="button button--ghost button--large" onClick={backToDashboard}>
-                Retour missions
-              </button>
-
-              <button
-                className="button button--primary button--large"
-                onClick={() => {
-                  if (mission?.status === 'in_progress') {
-                    completeMission()
-                  } else if (mission?.status === 'completed') {
-                    resetTracking()
-                  } else {
-                    startMission()
-                  }
-                }}
-              >
-                {mission?.status === 'in_progress'
-                  ? 'Confirmer livraison'
-                  : mission?.status === 'completed'
-                  ? 'Terminer & quitter'
-                  : 'Démarrer la mission'}
-              </button>
-            </div>
-          </section>
-
-          {/* Colonne droite : carte */}
-          <section className="tracking-map-card">
-            <header className="tracking-map-card__header">
-              <div>
-                <p className="tracking-map-title">Position en temps réel</p>
-                <p className="tracking-map-sub">{mission?.pickup} ➜ {mission?.dropoff}</p>
-              </div>
-            </header>
-
-            <div className="tracking-map-wrapper">
-              <MapRoute pickup={mapPickup} dropoff={mapDropoff} waypoints={mapWaypoints} />
-            </div>
-          </section>
+    <div className="trk-root">
+      {/* Barre supérieure */}
+      <header className="trk-topbar">
+        <button className="trk-back" onClick={backToDashboard} aria-label="Retour">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+            <path d="M19 12H5M12 19l-7-7 7-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </button>
+        <div className="trk-topbar__center">
+          <p className="trk-topbar__title">{mission?.title || 'Mission en cours'}</p>
+          <p className="trk-topbar__id">{mission?.id}</p>
         </div>
-      </main>
-      <BottomNav />
+        <span className={`trk-badge trk-badge--${mission?.status || 'unknown'}`}>
+          {statusLabel}
+        </span>
+      </header>
+
+      {/* Carte GPS — plein écran */}
+      <div className="trk-map">
+        <MapRoute pickup={mapPickup} dropoff={mapDropoff} waypoints={mapWaypoints} />
+        <div className="trk-map__live">
+          <span className="trk-live-dot" />
+          <span>GPS actif</span>
+        </div>
+      </div>
+
+      {/* Panneau infos bas */}
+      <div className="trk-panel">
+        {/* Itinéraire */}
+        <div className="trk-route">
+          <div className="trk-route__point">
+            <span className="trk-route__marker trk-route__marker--a">A</span>
+            <div className="trk-route__text">
+              <span className="trk-route__label">Chargement</span>
+              <p className="trk-route__addr">{mission?.pickup}</p>
+            </div>
+          </div>
+          <div className="trk-route__line" />
+          <div className="trk-route__point">
+            <span className="trk-route__marker trk-route__marker--b">B</span>
+            <div className="trk-route__text">
+              <span className="trk-route__label">Livraison</span>
+              <p className="trk-route__addr">{mission?.dropoff}</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Métriques */}
+        <div className="trk-metrics">
+          <div className="trk-metric">
+            <strong>{mission?.distance || 0} km</strong>
+            <span>Distance</span>
+          </div>
+          <div className="trk-metric trk-metric--sep" />
+          <div className="trk-metric">
+            <strong>{mission?.duration || 0} min</strong>
+            <span>Durée estimée</span>
+          </div>
+          <div className="trk-metric trk-metric--sep" />
+          <div className="trk-metric">
+            <strong>{mission?.price?.toLocaleString('fr-FR') || 0} F</strong>
+            <span>Rémunération</span>
+          </div>
+        </div>
+
+        {/* Client */}
+        <div className="trk-customer">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+            <circle cx="12" cy="7" r="4" stroke="currentColor" strokeWidth="2"/>
+          </svg>
+          <span>{mission?.customer}</span>
+          {mission?.phone && (
+            <a href={`tel:${mission.phone}`} className="trk-customer__phone">
+              {mission.phone}
+            </a>
+          )}
+        </div>
+
+        {/* Actions */}
+        <div className="trk-actions">
+          <button
+            className="trk-btn trk-btn--primary"
+            onClick={() => {
+              if (mission?.status === 'in_progress') completeMission()
+              else if (mission?.status === 'completed') resetTracking()
+              else startMission()
+            }}
+          >
+            {mission?.status === 'in_progress' ? 'Confirmer la livraison'
+              : mission?.status === 'completed' ? 'Terminer et quitter'
+              : 'Démarrer la mission'}
+          </button>
+        </div>
+      </div>
     </div>
   )
 }

@@ -1,0 +1,1232 @@
+/* ============================================================
+   DRIVER DASHBOARD - CAMIONSUF
+   Design moderne et professionnel pour le tableau de bord chauffeur
+   ============================================================ */
+
+/* ══ VARIABLES ════════════════════════════════════════════ */
+:root {
+  --dashboard-primary: #051c3e;
+  --dashboard-primary-light: #174e9b;
+  --dashboard-accent: #ff6a1d;
+  --dashboard-success: #00c27e;
+  --dashboard-warning: #ff9a3d;
+  --dashboard-info: #4285f4;
+  --dashboard-danger: #e03e3e;
+  --dashboard-gradient: linear-gradient(135deg, #051c3e 0%, #174e9b 100%);
+  --dashboard-bg: #f8f9fb;
+  --dashboard-card-bg: #ffffff;
+  --dashboard-border: rgba(5, 28, 62, 0.08);
+  --dashboard-shadow: 0 4px 16px rgba(5, 28, 62, 0.08);
+  --dashboard-shadow-lg: 0 8px 32px rgba(5, 28, 62, 0.12);
+}
+
+/* ══ LAYOUT ═══════════════════════════════════════════════ */
+.driver-dashboard {
+  background: var(--dashboard-bg);
+  min-height: 100vh;
+}
+
+.driver-dashboard__page {
+  padding: 24px 32px 120px;
+  max-width: 1400px;
+}
+
+.driver-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* ══ WELCOME SECTION ══════════════════════════════════════ */
+.dashboard-welcome {
+  background: var(--dashboard-card-bg);
+  border-radius: 20px;
+  padding: 24px 28px;
+  border: 1px solid var(--dashboard-border);
+  box-shadow: var(--dashboard-shadow);
+}
+
+.dashboard-welcome__content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.dashboard-welcome__greeting {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.dashboard-welcome__icon {
+  font-size: 3rem;
+  animation: wave 2.5s ease-in-out infinite;
+}
+
+@keyframes wave {
+  0%, 100% { transform: rotate(0deg); }
+  10%, 30% { transform: rotate(14deg); }
+  20%, 40% { transform: rotate(-8deg); }
+  50% { transform: rotate(0deg); }
+}
+
+.dashboard-welcome__greeting h1 {
+  margin: 0 0 4px;
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: 800;
+  color: var(--dashboard-primary);
+  letter-spacing: -0.02em;
+}
+
+.dashboard-welcome__greeting p {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #6b7f99;
+  font-weight: 500;
+}
+
+.dashboard-welcome__status {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: 50px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.status-badge--active {
+  background: linear-gradient(135deg, rgba(0, 194, 126, 0.1) 0%, rgba(0, 194, 126, 0.05) 100%);
+  border: 1.5px solid rgba(0, 194, 126, 0.3);
+  color: var(--dashboard-success);
+}
+
+.status-badge__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--dashboard-success);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(1.1); }
+}
+
+.status-badge__label {
+  font-weight: 700;
+}
+
+/* ══ STATS GRID ═══════════════════════════════════════════ */
+.dashboard-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.dashboard-stat-card {
+  background: var(--dashboard-card-bg);
+  border-radius: 16px;
+  padding: 20px 24px;
+  border: 1px solid var(--dashboard-border);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.dashboard-stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: currentColor;
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+  transform-origin: left;
+}
+
+.dashboard-stat-card:hover {
+  box-shadow: var(--dashboard-shadow-lg);
+  transform: translateY(-2px);
+  border-color: currentColor;
+}
+
+.dashboard-stat-card:hover::before {
+  transform: scaleX(1);
+}
+
+.dashboard-stat-card__icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: currentColor;
+  color: #fff;
+  opacity: 0.15;
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+}
+
+.dashboard-stat-card:hover .dashboard-stat-card__icon {
+  opacity: 1;
+  transform: scale(1.05);
+}
+
+.dashboard-stat-card__icon svg {
+  opacity: 1;
+}
+
+.dashboard-stat-card__content {
+  flex: 1;
+  min-width: 0;
+}
+
+.dashboard-stat-card__label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #6b7f99;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.dashboard-stat-card__value {
+  display: block;
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: var(--dashboard-primary);
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+/* Stat card variants */
+.dashboard-stat-card--primary { color: var(--dashboard-primary); }
+.dashboard-stat-card--warning { color: var(--dashboard-warning); }
+.dashboard-stat-card--info { color: var(--dashboard-info); }
+.dashboard-stat-card--success { color: var(--dashboard-success); }
+.dashboard-stat-card--accent { color: var(--dashboard-accent); }
+
+/* ══ INCOMING MISSION ALERT ══════════════════════════════ */
+.incoming-mission-alert {
+  background: linear-gradient(135deg, rgba(255, 106, 29, 0.05) 0%, rgba(255, 106, 29, 0.02) 100%);
+  border: 2px solid rgba(255, 106, 29, 0.3);
+  border-radius: 20px;
+  padding: 24px;
+  animation: alertPulse 2s ease-in-out infinite;
+}
+
+@keyframes alertPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 106, 29, 0.4); }
+  50% { box-shadow: 0 0 0 8px rgba(255, 106, 29, 0); }
+}
+
+.incoming-mission-alert__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.incoming-mission-alert__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 16px;
+  background: var(--dashboard-accent);
+  color: #fff;
+  border-radius: 50px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  animation: badgeShake 0.5s ease-in-out 3;
+}
+
+@keyframes badgeShake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
+.incoming-mission-alert__badge svg {
+  flex-shrink: 0;
+  animation: bellRing 2s ease-in-out infinite;
+}
+
+@keyframes bellRing {
+  0%, 100% { transform: rotate(0deg); }
+  10%, 30% { transform: rotate(14deg); }
+  20% { transform: rotate(-14deg); }
+  40% { transform: rotate(0deg); }
+}
+
+.incoming-mission-alert__id {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--dashboard-accent);
+  padding: 6px 14px;
+  background: rgba(255, 106, 29, 0.1);
+  border-radius: 8px;
+}
+
+.incoming-mission-alert__content {
+  margin-bottom: 24px;
+}
+
+.incoming-mission-alert__title {
+  margin: 0 0 20px;
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--dashboard-primary);
+}
+
+.incoming-mission-alert__route {
+  background: var(--dashboard-card-bg);
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 20px;
+  border: 1px solid rgba(255, 106, 29, 0.15);
+}
+
+.route-point {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.route-point + .route-connector + .route-point {
+  margin-top: 0;
+}
+
+.route-point__icon {
+  font-size: 1.8rem;
+  flex-shrink: 0;
+}
+
+.route-point__info {
+  flex: 1;
+}
+
+.route-point__label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #6b7f99;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 6px;
+}
+
+.route-point__address {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--dashboard-primary);
+  font-weight: 600;
+}
+
+.route-connector {
+  display: flex;
+  align-items: center;
+  padding: 12px 0 12px 26px;
+}
+
+.route-connector::before {
+  content: '';
+  width: 2px;
+  height: 100%;
+  background: linear-gradient(180deg, rgba(255, 106, 29, 0.3) 0%, rgba(255, 106, 29, 0.1) 100%);
+  margin-right: 14px;
+  border-radius: 2px;
+}
+
+.incoming-mission-alert__meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: var(--dashboard-card-bg);
+  border: 1px solid var(--dashboard-border);
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--dashboard-primary);
+}
+
+.meta-item svg {
+  flex-shrink: 0;
+  opacity: 0.6;
+}
+
+.meta-item--price {
+  background: linear-gradient(135deg, rgba(255, 106, 29, 0.08) 0%, rgba(255, 106, 29, 0.03) 100%);
+  border-color: rgba(255, 106, 29, 0.2);
+}
+
+.meta-item--price strong {
+  color: var(--dashboard-accent);
+  font-weight: 800;
+}
+
+.incoming-mission-alert__actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.button--large {
+  padding: 16px 32px;
+  font-size: 1.05rem;
+}
+
+/* ══ MISSIONS HUB ═════════════════════════════════════════ */
+.missions-hub {
+  background: var(--dashboard-card-bg);
+  border-radius: 20px;
+  padding: 28px;
+  border: 1px solid var(--dashboard-border);
+  box-shadow: var(--dashboard-shadow);
+}
+
+.missions-hub__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--dashboard-border);
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.missions-hub__title {
+  flex: 1;
+  min-width: 200px;
+}
+
+.missions-hub__kicker {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: var(--dashboard-info);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 8px;
+}
+
+.missions-hub__title h2 {
+  margin: 0;
+  font-size: clamp(1.3rem, 2.5vw, 1.75rem);
+  font-weight: 800;
+  color: var(--dashboard-primary);
+  letter-spacing: -0.02em;
+}
+
+.missions-hub__filters {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.missions-filter-tab {
+  padding: 10px 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border-radius: 10px;
+  background: rgba(5, 28, 62, 0.04);
+  border: 1.5px solid transparent;
+  color: #4a6088;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.missions-filter-tab:hover {
+  background: rgba(5, 28, 62, 0.08);
+  border-color: rgba(5, 28, 62, 0.12);
+  color: var(--dashboard-primary);
+}
+
+.missions-filter-tab--active {
+  background: var(--dashboard-gradient);
+  border-color: var(--dashboard-primary);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(5, 28, 62, 0.2);
+}
+
+.missions-hub__layout {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ══ MISSIONS LIST ════════════════════════════════════════ */
+.missions-list__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.missions-list__header h3 {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--dashboard-primary);
+}
+
+.loading-indicator {
+  font-size: 0.85rem;
+  color: #6b7f99;
+  font-weight: 500;
+  animation: fadeInOut 1.5s ease-in-out infinite;
+}
+
+@keyframes fadeInOut {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.missions-list__content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 720px;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+/* Custom scrollbar */
+.missions-list__content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.missions-list__content::-webkit-scrollbar-track {
+  background: rgba(5, 28, 62, 0.04);
+  border-radius: 10px;
+}
+
+.missions-list__content::-webkit-scrollbar-thumb {
+  background: rgba(5, 28, 62, 0.15);
+  border-radius: 10px;
+}
+
+.missions-list__content::-webkit-scrollbar-thumb:hover {
+  background: rgba(5, 28, 62, 0.25);
+}
+
+/* ══ MISSION STATUS PILL ═════════════════════════════════ */
+.mission-status-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.mission-status-pill--assigned {
+  background: rgba(66, 133, 244, 0.1);
+  color: #174e9b;
+}
+
+.mission-status-pill--in_progress {
+  background: rgba(255, 154, 61, 0.12);
+  color: #c6531a;
+}
+
+.mission-status-pill--delivered,
+.mission-status-pill--completed {
+  background: rgba(0, 194, 126, 0.1);
+  color: #0b5c2c;
+}
+
+/* ══ MISSION ROW ══════════════════════════════════════════ */
+.mission-row {
+  display: grid;
+  grid-template-columns: auto 1fr 2fr auto auto;
+  align-items: center;
+  gap: 0 20px;
+  padding: 18px 20px;
+  background: #fff;
+  border: 1px solid var(--dashboard-border);
+  border-radius: 12px;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  transition: all 0.18s ease;
+  position: relative;
+}
+
+.mission-row::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  border-radius: 12px 0 0 12px;
+  background: currentColor;
+  opacity: 0;
+  transition: opacity 0.18s ease;
+}
+
+.mission-row:hover {
+  border-color: currentColor;
+  box-shadow: 0 4px 16px rgba(5, 28, 62, 0.08);
+  transform: translateY(-1px);
+}
+
+.mission-row:hover::before {
+  opacity: 1;
+}
+
+.mission-row--assigned  { color: var(--dashboard-info); }
+.mission-row--in_progress { color: var(--dashboard-warning); }
+.mission-row--delivered,
+.mission-row--completed { color: var(--dashboard-success); }
+
+.mission-row__info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.mission-row__title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--dashboard-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mission-row__id {
+  font-size: 0.8rem;
+  color: #6b7f99;
+  font-weight: 500;
+}
+
+.mission-row__route {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.route-addr {
+  font-size: 0.85rem;
+  color: #4a5c74;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+
+.mission-row__arrow {
+  color: #b8c8db;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.mission-row__meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.mission-row__meta span {
+  font-size: 0.82rem;
+  color: #6b7f99;
+  font-weight: 500;
+}
+
+.mission-row__price {
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--dashboard-accent);
+}
+
+.mission-row__chevron {
+  color: #b8c8db;
+  flex-shrink: 0;
+  transition: transform 0.18s ease, color 0.18s ease;
+}
+
+.mission-row:hover .mission-row__chevron {
+  transform: translateX(3px);
+  color: currentColor;
+}
+
+/* ══ MISSION MODAL ════════════════════════════════════════ */
+.mission-modal__overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(5, 28, 62, 0.55);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 1000;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  animation: overlayFadeIn 0.2s ease;
+}
+
+@keyframes overlayFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.mission-modal {
+  background: #fff;
+  width: 100%;
+  max-width: 540px;
+  border-radius: 24px 24px 0 0;
+  max-height: 92dvh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  animation: modalSlideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  scrollbar-width: none;
+}
+
+.mission-modal::-webkit-scrollbar { display: none; }
+
+/* Drag handle mobile */
+.mission-modal::before {
+  content: '';
+  display: block;
+  width: 40px;
+  height: 4px;
+  background: #dde3ef;
+  border-radius: 2px;
+  margin: 12px auto 0;
+  flex-shrink: 0;
+}
+
+@keyframes modalSlideUp {
+  from { transform: translateY(60px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+.mission-modal__header {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--dashboard-border);
+  position: sticky;
+  top: 0;
+  background: #fff;
+  z-index: 1;
+}
+
+.mission-modal__header-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.mission-modal__title {
+  margin: 0 0 4px;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--dashboard-primary);
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.mission-modal__id {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #6b7f99;
+}
+
+.mission-modal__close {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: rgba(5, 28, 62, 0.05);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--dashboard-primary);
+  flex-shrink: 0;
+  transition: all 0.15s ease;
+}
+
+.mission-modal__close:hover {
+  background: rgba(5, 28, 62, 0.1);
+  transform: scale(1.05);
+}
+
+.mission-modal__body {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  flex: 1;
+}
+
+/* Sections internes du modal */
+.modal-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.modal-section__title {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #6b7f99;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.modal-info__value {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--dashboard-primary);
+}
+
+.modal-info__sub {
+  margin: 4px 0 0;
+  font-size: 0.88rem;
+  color: #6b7f99;
+  font-weight: 500;
+}
+
+.modal-phone {
+  display: inline-block;
+  margin-top: 4px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--dashboard-info);
+  text-decoration: none;
+  font-family: 'Courier New', monospace;
+}
+
+.modal-phone:hover { text-decoration: underline; }
+
+/* Itinéraire dans le modal */
+.modal-route {
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  background: rgba(5, 28, 62, 0.03);
+  border: 1px solid var(--dashboard-border);
+  border-radius: 12px;
+}
+
+.modal-route__point {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.modal-route__dot {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.modal-route__dot--start { background: var(--dashboard-info); }
+.modal-route__dot--end   { background: var(--dashboard-success); }
+
+.modal-route__text { flex: 1; }
+
+.modal-route__label {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #6b7f99;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+}
+
+.modal-route__address {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--dashboard-primary);
+  line-height: 1.4;
+}
+
+.modal-route__connector {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 0 10px 13px;
+}
+
+.modal-route__line {
+  width: 2px;
+  height: 26px;
+  background: linear-gradient(180deg, var(--dashboard-info) 0%, var(--dashboard-success) 100%);
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.modal-route__distance {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #6b7f99;
+  padding: 4px 10px;
+  background: #fff;
+  border: 1px solid var(--dashboard-border);
+  border-radius: 20px;
+}
+
+/* Grille matériau + client */
+.modal-info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+/* Rémunération */
+.modal-payment {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px;
+  background: linear-gradient(135deg, rgba(255, 106, 29, 0.07) 0%, rgba(255, 106, 29, 0.03) 100%);
+  border: 1.5px solid rgba(255, 106, 29, 0.2);
+  border-radius: 12px;
+}
+
+.modal-payment__label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #6b7f99;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.modal-payment__amount {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--dashboard-accent);
+  letter-spacing: -0.02em;
+}
+
+.modal-payment__amount span {
+  font-size: 1rem;
+  font-weight: 600;
+  opacity: 0.8;
+}
+
+/* Pied de page du modal */
+.mission-modal__footer {
+  padding: 20px 24px;
+  border-top: 1px solid var(--dashboard-border);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: rgba(5, 28, 62, 0.02);
+}
+
+.mission-modal__footer .button {
+  width: 100%;
+  justify-content: center;
+  gap: 10px;
+}
+
+/* ══ EMPTY STATE ══════════════════════════════════════════ */
+.empty-state {
+  text-align: center;
+  padding: 48px 24px;
+  color: #6b7f99;
+}
+
+.empty-state svg {
+  margin: 0 auto 20px;
+  opacity: 0.3;
+  stroke: currentColor;
+}
+
+.empty-state h4 {
+  margin: 0 0 8px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--dashboard-primary);
+}
+
+.empty-state p {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  max-width: 320px;
+  margin: 0 auto;
+}
+
+.empty-state--detail {
+  padding: 80px 24px;
+}
+
+/* ══ BUTTONS ══════════════════════════════════════════════ */
+.button {
+  display: inline-flex;
+  align-items: center;
+  padding: 12px 24px;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  font-family: inherit;
+}
+
+.button svg {
+  flex-shrink: 0;
+}
+
+.button--primary {
+  background: var(--dashboard-gradient);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(5, 28, 62, 0.2);
+}
+
+.button--primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(5, 28, 62, 0.3);
+}
+
+.button--success {
+  background: linear-gradient(135deg, var(--dashboard-success) 0%, #00a666 100%);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(0, 194, 126, 0.2);
+}
+
+.button--success:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 194, 126, 0.3);
+}
+
+.button--outline {
+  background: transparent;
+  border: 1.5px solid var(--dashboard-border);
+  color: var(--dashboard-primary);
+}
+
+.button--outline:hover {
+  background: rgba(5, 28, 62, 0.04);
+  border-color: var(--dashboard-primary);
+}
+
+.button--ghost {
+  background: transparent;
+  color: #6b7f99;
+}
+
+.button--ghost:hover {
+  background: rgba(5, 28, 62, 0.04);
+  color: var(--dashboard-primary);
+}
+
+/* ══ RESPONSIVE ═══════════════════════════════════════════ */
+@media (min-width: 640px) {
+  .mission-modal {
+    border-radius: 20px;
+    max-height: 85dvh;
+  }
+
+  .mission-modal::before {
+    display: none;
+  }
+
+  .mission-modal__overlay {
+    align-items: center;
+    padding: 24px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .dashboard-stats {
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .driver-dashboard__page {
+    padding: 16px 16px 120px;
+  }
+
+  .dashboard-welcome {
+    padding: 20px;
+  }
+
+  .dashboard-welcome__icon {
+    font-size: 2.5rem;
+  }
+
+  .dashboard-stats {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .dashboard-stat-card {
+    padding: 16px;
+  }
+
+  .dashboard-stat-card__icon {
+    width: 48px;
+    height: 48px;
+  }
+
+  .dashboard-stat-card__value {
+    font-size: 1.5rem;
+  }
+
+  .missions-hub {
+    padding: 20px;
+  }
+
+  .missions-hub__header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .missions-hub__filters {
+    width: 100%;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding-bottom: 4px;
+  }
+
+  .missions-filter-tab {
+    flex-shrink: 0;
+  }
+
+  .incoming-mission-alert {
+    padding: 20px;
+  }
+
+  .incoming-mission-alert__meta {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .incoming-mission-alert__actions {
+    flex-direction: column;
+  }
+
+  .incoming-mission-alert__actions .button {
+    width: 100%;
+  }
+
+  /* Mission rows on mobile */
+  .mission-row {
+    grid-template-columns: auto 1fr auto;
+    grid-template-rows: auto auto;
+    row-gap: 10px;
+    padding: 14px 16px;
+  }
+
+  .mission-row__route {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .mission-row__arrow {
+    display: none;
+  }
+
+  .route-addr {
+    max-width: 100%;
+  }
+
+  .mission-row__meta {
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+  }
+
+  .modal-info-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .driver-dashboard__page {
+    padding: 12px 12px 120px;
+  }
+
+  .dashboard-welcome__content {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .dashboard-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .missions-hub {
+    padding: 16px;
+  }
+
+  .incoming-mission-alert__meta {
+    grid-template-columns: 1fr;
+  }
+
+  .mission-modal__body {
+    padding: 16px;
+  }
+
+  .mission-modal__header,
+  .mission-modal__footer {
+    padding: 16px;
+  }
+}

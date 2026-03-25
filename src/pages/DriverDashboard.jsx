@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { doc, setDoc } from 'firebase/firestore'
 import { BrandHeader } from '../components/BrandHeader'
-import '../App.css'
+import '../css/pages/DriverDashboard.css'
 import { BottomNav } from '../components/BottomNav'
 import { getCurrentPosition } from '../utils/geo'
 import {
@@ -337,95 +337,51 @@ export function DriverDashboard() {
     <div className="app driver-dashboard">
       <BrandHeader />
       <main className="page driver-dashboard__page">
-        <section className="driver-layout">
-          {/* ══ WELCOME & STATS HEADER ══ */}
-          <div className="dashboard-welcome">
-            <div className="dashboard-welcome__content">
-              <div className="dashboard-welcome__greeting">
-                <span className="dashboard-welcome__icon">👋</span>
-                <div>
-                  <h1>Bonjour, {user?.name || 'Chauffeur'}</h1>
-                  <p>Voici vos missions du jour</p>
-                </div>
-              </div>
-              <div className="dashboard-welcome__status">
-                <div className="status-badge status-badge--active">
-                  <span className="status-badge__dot"></span>
-                  <span className="status-badge__label">En service</span>
-                </div>
-              </div>
+
+        {/* ══ HEADER COMPACT ══ */}
+        <header className="db-header">
+          <div className="db-header__left">
+            <div className="db-avatar">
+              {(user?.name || 'C').charAt(0).toUpperCase()}
+            </div>
+            <div>
+              <h1 className="db-header__name">{user?.name || 'Chauffeur'}</h1>
+              <p className="db-header__date">
+                {new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}
+              </p>
             </div>
           </div>
+          <span className="db-status-badge">
+            <span className="db-status-badge__dot"></span>
+            En service
+          </span>
+        </header>
 
-          {/* ══ STATS GRID ══ */}
-          <div className="dashboard-stats">
-            <article className="dashboard-stat-card dashboard-stat-card--primary">
-              <div className="dashboard-stat-card__icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                  <path d="M9 11l3 3L22 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </div>
-              <div className="dashboard-stat-card__content">
-                <span className="dashboard-stat-card__label">Total missions</span>
-                <strong className="dashboard-stat-card__value">{stats.total}</strong>
-              </div>
-            </article>
-
-            <article className="dashboard-stat-card dashboard-stat-card--warning">
-              <div className="dashboard-stat-card__icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                  <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/>
-                  <path d="M12 6v6l4 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                </svg>
-              </div>
-              <div className="dashboard-stat-card__content">
-                <span className="dashboard-stat-card__label">En cours</span>
-                <strong className="dashboard-stat-card__value">{stats.inProgress}</strong>
-              </div>
-            </article>
-
-            <article className="dashboard-stat-card dashboard-stat-card--info">
-              <div className="dashboard-stat-card__icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                  <path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  <circle cx="8.5" cy="7" r="4" stroke="currentColor" strokeWidth="2"/>
-                  <path d="M20 8v6M23 11h-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                </svg>
-              </div>
-              <div className="dashboard-stat-card__content">
-                <span className="dashboard-stat-card__label">Assignées</span>
-                <strong className="dashboard-stat-card__value">{stats.assigned}</strong>
-              </div>
-            </article>
-
-            <article className="dashboard-stat-card dashboard-stat-card--success">
-              <div className="dashboard-stat-card__icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                  <polyline points="20 6 9 17 4 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </div>
-              <div className="dashboard-stat-card__content">
-                <span className="dashboard-stat-card__label">Livrées</span>
-                <strong className="dashboard-stat-card__value">{stats.delivered}</strong>
-              </div>
-            </article>
-
-            <article className="dashboard-stat-card dashboard-stat-card--accent">
-              <div className="dashboard-stat-card__icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                  <line x1="12" y1="1" x2="12" y2="23" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                  <path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </div>
-              <div className="dashboard-stat-card__content">
-                <span className="dashboard-stat-card__label">CA du jour</span>
-                <strong className="dashboard-stat-card__value">{stats.todayRevenue.toLocaleString('fr-FR')} F</strong>
-              </div>
-            </article>
+        {/* ══ STATS STRIP ══ */}
+        <div className="db-stats-strip">
+          <div className="db-stat">
+            <strong className="db-stat__value">{stats.total}</strong>
+            <span className="db-stat__label">Missions</span>
           </div>
+          <div className="db-stat db-stat--warning">
+            <strong className="db-stat__value">{stats.inProgress}</strong>
+            <span className="db-stat__label">En cours</span>
+          </div>
+          <div className="db-stat db-stat--info">
+            <strong className="db-stat__value">{stats.assigned}</strong>
+            <span className="db-stat__label">Assignées</span>
+          </div>
+          <div className="db-stat db-stat--success">
+            <strong className="db-stat__value">{stats.delivered}</strong>
+            <span className="db-stat__label">Livrées</span>
+          </div>
+          <div className="db-stat db-stat--accent">
+            <strong className="db-stat__value">{stats.todayRevenue.toLocaleString('fr-FR')}</strong>
+            <span className="db-stat__label">F CFA gagné</span>
+          </div>
+        </div>
 
-          {/* ══ INCOMING MISSION ALERT ══ */}
+        {/* ══ INCOMING MISSION ALERT ══ */}
           {incomingMission && (
             <section className="incoming-mission-alert" role="status" aria-live="polite">
               <div className="incoming-mission-alert__header">
@@ -506,20 +462,20 @@ export function DriverDashboard() {
             </section>
           )}
 
-          {/* ══ MISSIONS HUB ══ */}
-          <section className="missions-hub">
-            <header className="missions-hub__header">
-              <div className="missions-hub__title">
-                <span className="missions-hub__kicker">Planification</span>
-                <h2>Ordonnancement des missions</h2>
-              </div>
-              <div className="missions-hub__filters">
+          {/* ══ MISSIONS ══ */}
+          <section className="db-missions">
+            <div className="db-missions__top">
+              <h2 className="db-missions__title">
+                Mes missions
+                <span className="db-missions__count">{filteredMissions.length}</span>
+              </h2>
+              <div className="db-tabs">
                 {tabOptions.map((tab) => {
                   const isActive = activeTab === tab.key
                   return (
                     <button
                       key={tab.key}
-                      className={`missions-filter-tab ${isActive ? 'missions-filter-tab--active' : ''}`}
+                      className={`db-tab ${isActive ? 'db-tab--active' : ''}`}
                       onClick={() => setActiveTab(tab.key)}
                     >
                       {tab.label}
@@ -527,66 +483,68 @@ export function DriverDashboard() {
                   )
                 })}
               </div>
-            </header>
+            </div>
 
-            <div className="missions-hub__layout">
-              <div className="missions-list">
-                <div className="missions-list__header">
-                  <h3>{filteredMissions.length} mission{filteredMissions.length !== 1 ? 's' : ''}</h3>
-                  {loading && <span className="loading-indicator">Actualisation…</span>}
+            {loading && <p className="db-loading">Actualisation…</p>}
+
+            <div className="db-mission-list">
+              {filteredMissions.length === 0 ? (
+                <div className="db-empty">
+                  <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
+                    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5"/>
+                    <path d="M12 8v4M12 16h.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                  </svg>
+                  <p>Aucune mission pour ce filtre.</p>
                 </div>
-
-                <div className="missions-list__content">
-                  {filteredMissions.length === 0 ? (
-                    <div className="empty-state">
-                      <svg width="56" height="56" viewBox="0 0 24 24" fill="none">
-                        <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5"/>
-                        <path d="M12 8v4M12 16h.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                      </svg>
-                      <h4>Aucune mission</h4>
-                      <p>Aucune mission disponible pour ce filtre.</p>
+              ) : (
+                filteredMissions.map((mission) => (
+                  <button
+                    key={mission.id}
+                    className={`db-mission-item db-mission-item--${mission.status?.toLowerCase() || 'assigned'}`}
+                    onClick={() => openModal(mission)}
+                  >
+                    <div className="db-mission-item__left">
+                      <span className={`db-pill db-pill--${mission.status?.toLowerCase() || 'assigned'}`}>
+                        {getStatusLabel(mission.status)}
+                      </span>
+                      <div className="db-mission-item__info">
+                        <strong className="db-mission-item__title">{mission.title}</strong>
+                        <span className="db-mission-item__id">{mission.id}</span>
+                      </div>
                     </div>
-                  ) : (
-                    filteredMissions.map((mission) => (
-                      <button
-                        key={mission.id}
-                        className={`mission-row mission-row--${mission.status?.toLowerCase() || 'assigned'}`}
-                        onClick={() => openModal(mission)}
-                      >
-                        <span className={`mission-status-pill mission-status-pill--${mission.status?.toLowerCase() || 'assigned'}`}>
-                          {getStatusLabel(mission.status)}
-                        </span>
 
-                        <div className="mission-row__info">
-                          <strong className="mission-row__title">{mission.title}</strong>
-                          <span className="mission-row__id">{mission.id}</span>
-                        </div>
+                    <div className="db-mission-item__route">
+                      <span className="db-route-pt db-route-pt--start">
+                        <span className="db-route-pt__dot"></span>
+                        {mission.pickup}
+                      </span>
+                      <span className="db-route-connector"></span>
+                      <span className="db-route-pt db-route-pt--end">
+                        <span className="db-route-pt__dot"></span>
+                        {mission.dropoff}
+                      </span>
+                    </div>
 
-                        <div className="mission-row__route">
-                          <span className="route-addr">📍 {mission.pickup}</span>
-                          <span className="mission-row__arrow">→</span>
-                          <span className="route-addr">🎯 {mission.dropoff}</span>
-                        </div>
+                    <div className="db-mission-item__metrics">
+                      <span>{mission.distance} km</span>
+                      <span>{mission.duration} min</span>
+                    </div>
 
-                        <div className="mission-row__meta">
-                          <span>{mission.distance} km · {mission.duration} min</span>
-                          <strong className="mission-row__price">{mission.price.toLocaleString('fr-FR')} F</strong>
-                        </div>
+                    <strong className="db-mission-item__price">
+                      {mission.price.toLocaleString('fr-FR')} F
+                    </strong>
 
-                        <svg className="mission-row__chevron" width="20" height="20" viewBox="0 0 24 24" fill="none">
-                          <path d="M9 18l6-6-6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                        </svg>
-                      </button>
-                    ))
-                  )}
-                </div>
-              </div>
+                    <svg className="db-mission-item__chevron" width="18" height="18" viewBox="0 0 24 24" fill="none">
+                      <path d="M9 18l6-6-6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </button>
+                ))
+              )}
             </div>
           </section>
 
           {error && <div className="alert alert--danger">{error}</div>}
-        </section>
-      </main>
+        </main>
 
       {/* ══ MISSION MODAL ══ */}
       {modalOpen && selectedMission && (

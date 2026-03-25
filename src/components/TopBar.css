@@ -1,0 +1,172 @@
+/* ══════════════════════════════════════════════════════
+   TOPBAR / NAVBAR — BrandHeader
+══════════════════════════════════════════════════════ */
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 0 24px;
+  height: 60px;
+  background: #051c3e;
+  box-shadow: 0 2px 12px rgba(5, 28, 62, 0.25);
+}
+
+/* ── Brand ──────────────────────────────────────────── */
+.topbar__brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.topbar__logo {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 3px;
+}
+
+.topbar__title {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+
+.topbar__name {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.01em;
+}
+
+.topbar__tagline {
+  font-size: 0.65rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.5);
+  letter-spacing: 0.02em;
+}
+
+/* ── Nav links ──────────────────────────────────────── */
+.topbar__nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+  justify-content: center;
+}
+
+.topbar__navItem {
+  position: relative;
+  padding: 7px 14px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.65);
+  text-decoration: none;
+  transition: all 0.15s ease;
+  letter-spacing: 0.01em;
+}
+
+.topbar__navItem:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.topbar__navItem--active {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.topbar__navItem--active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 20px;
+  height: 2.5px;
+  background: #ff6a1d;
+  border-radius: 2px;
+}
+
+/* ── Actions (cloche) ───────────────────────────────── */
+.topbar__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.topbar__actionButton {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.75);
+  text-decoration: none;
+  transition: all 0.15s ease;
+  font-size: 1rem;
+}
+
+.topbar__actionButton:hover {
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+}
+
+.topbar__actionButton--active {
+  background: rgba(255, 106, 29, 0.2);
+  color: #ff6a1d;
+}
+
+.topbar__actionIcon {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.topbar__badge {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  background: #ff6a1d;
+  color: #fff;
+  border-radius: 100px;
+  font-size: 0.6rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  border: 1.5px solid #051c3e;
+}
+
+/* ── Responsive ─────────────────────────────────────── */
+@media (max-width: 480px) {
+  .topbar {
+    padding: 0 14px;
+    height: 54px;
+  }
+
+  .topbar__tagline {
+    display: none;
+  }
+
+  .topbar__navItem {
+    padding: 6px 10px;
+    font-size: 0.8rem;
+  }
+}
