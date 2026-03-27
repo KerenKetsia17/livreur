@@ -1,0 +1,390 @@
+﻿/* ═══════════ MissionDetail — Driver UI Kit Style ═══════════ */
+
+.md-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(15, 30, 60, 0.5);
+  backdrop-filter: blur(5px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  animation: md-fade 0.2s ease;
+}
+
+@keyframes md-fade {
+  from { opacity: 0 }
+  to   { opacity: 1 }
+}
+
+.md-dialog {
+  background: #eef4fd;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 420px;
+  max-height: 92vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 20px 50px -10px rgba(29, 104, 212, 0.25);
+  animation: md-slide 0.25s ease;
+}
+
+@keyframes md-slide {
+  from { transform: translateY(20px); opacity: 0 }
+  to   { transform: translateY(0);    opacity: 1 }
+}
+
+/* ── Header ── */
+.md-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  background: #fff;
+  border-bottom: 1px solid #dde8f8;
+}
+
+.md-header__left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.md-header__label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #1d68d4;
+}
+
+.md-status-badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 3px 12px;
+  border-radius: 20px;
+}
+
+.md-close-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: #eef4fd;
+  border: none;
+  color: #6b7280;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+}
+
+.md-close-btn:hover { background: #dde8f8; color: #1d68d4; }
+
+/* ── Body ── */
+.md-body {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  background: #eef4fd;
+}
+
+.md-body::-webkit-scrollbar { width: 4px; }
+.md-body::-webkit-scrollbar-thumb { background: #c3d6f5; border-radius: 2px; }
+
+/* ── Carte mission principale ── */
+.md-mission-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 18px;
+  box-shadow: 0 2px 8px rgba(29, 104, 212, 0.08);
+}
+
+/* ── Itinéraire ── */
+.md-itinerary {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.md-stop {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.md-pin {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.md-pin--orange { background: #fff7ed; color: #f97316; }
+.md-pin--blue   { background: #eff6ff; color: #1d68d4; }
+
+.md-stop__text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.md-stop__main {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.md-stop__sub {
+  font-size: 0.68rem;
+  color: #9ca3af;
+}
+
+.md-itinerary__separator {
+  padding-left: 14px;
+  margin: 2px 0;
+}
+
+.md-itinerary__dots {
+  width: 2px;
+  height: 20px;
+  background: repeating-linear-gradient(
+    to bottom,
+    #d1d5db 0px, #d1d5db 4px,
+    transparent 4px, transparent 8px
+  );
+}
+
+/* ── Séparateur ticket ── */
+.md-ticket-sep {
+  margin: 14px -18px;
+  border: none;
+  border-top: 2px dashed #e5edf8;
+}
+
+/* ── Quick infos ── */
+.md-quick-infos {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.md-quick-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.md-quick-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.md-quick-icon--blue   { background: #1d68d4; color: #fff; }
+.md-quick-icon--navy   { background: #1e3a5f; color: #fff; }
+.md-quick-icon--green  { background: #16a34a; color: #fff; }
+.md-quick-icon--orange { background: #f97316; color: #fff; }
+
+.md-quick-value {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.md-quick-label {
+  font-size: 0.72rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+/* ── Client ── */
+.md-client-card {
+  background: #fff;
+  border-radius: 14px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 2px 8px rgba(29, 104, 212, 0.08);
+}
+
+.md-client-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #dbeafe;
+  color: #1d68d4;
+  font-size: 1rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.md-client-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.md-client-name { font-size: 0.875rem; font-weight: 600; color: #111827; }
+.md-client-sub  { font-size: 0.68rem; color: #9ca3af; }
+
+.md-call-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  background: #1d68d4;
+  color: #fff;
+  border-radius: 10px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background 0.15s;
+  flex-shrink: 0;
+}
+
+.md-call-btn:hover { background: #1558b0; }
+
+/* ── Pickup info ── */
+.md-pickup-info {
+  background: #fff;
+  border-radius: 12px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 2px 8px rgba(29, 104, 212, 0.06);
+}
+
+.md-pickup-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #6b7280;
+}
+
+.md-pickup-address {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: #374151;
+  flex: 1;
+}
+
+/* ── Erreur ── */
+.md-error-msg {
+  padding: 10px 14px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 10px;
+  color: #dc2626;
+  font-size: 0.78rem;
+  font-weight: 500;
+}
+
+/* ── Footer ── */
+.md-footer {
+  padding: 12px 14px;
+  background: #fff;
+  border-top: 1px solid #dde8f8;
+}
+
+/* ── Boutons ── */
+.md-action-row {
+  display: flex;
+  gap: 10px;
+}
+
+.md-btn {
+  flex: 1;
+  padding: 13px 16px;
+  border: none;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s;
+}
+
+.md-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+.md-btn:not(:disabled):active { transform: scale(0.97); }
+
+.md-btn--accept {
+  background: #22c55e;
+  color: #fff;
+}
+.md-btn--accept:hover:not(:disabled) {
+  background: #16a34a;
+  box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35);
+}
+
+.md-btn--refuse {
+  background: #ef4444;
+  color: #fff;
+  flex: 0.7;
+}
+.md-btn--refuse:hover:not(:disabled) {
+  background: #dc2626;
+  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.35);
+}
+
+.md-btn--track {
+  width: 100%;
+  background: #1d68d4;
+  color: #fff;
+  border-radius: 12px;
+}
+.md-btn--track:hover:not(:disabled) {
+  background: #1558b0;
+  box-shadow: 0 4px 14px rgba(29, 104, 212, 0.35);
+  transform: translateY(-1px);
+}
+
+.md-done-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 13px;
+  background: #dcfce7;
+  border-radius: 12px;
+  color: #15803d;
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+/* ── Spinner ── */
+.md-btn-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: md-spin 0.7s linear infinite;
+}
+
+@keyframes md-spin { to { transform: rotate(360deg) } }
+
+/* ── Mobile ── */
+@media (max-width: 480px) {
+  .md-overlay { padding: 0; align-items: flex-end; }
+  .md-dialog  { border-radius: 20px 20px 0 0; max-height: 96vh; }
+}

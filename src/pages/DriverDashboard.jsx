@@ -1,9 +1,10 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+﻿import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { doc, setDoc } from 'firebase/firestore'
 import { BrandHeader } from '../components/BrandHeader'
-import '../css/pages/DriverDashboard.css'
 import { BottomNav } from '../components/BottomNav'
+import { MissionDetail } from './MissionDetail'
+import '../css/pages/DriverDashboard.css'
 import { getCurrentPosition } from '../utils/geo'
 import {
   addDriverNotification,
@@ -13,12 +14,12 @@ import {
   setDriverNotifications,
 } from '../utils/storage'
 import { useOrders } from '../hooks/useOrders'
-import { db } from '../firebase'
+import { db, auth } from '../firebase'
 
 const tabOptions = [
   { key: 'all', label: 'Toutes' },
   { key: 'in_progress', label: 'En cours' },
-  { key: 'assigned', label: 'Assignees' },
+  { key: 'assigned', label: 'A realiser' },
   { key: 'delivered', label: 'Livrees' },
 ]
 
@@ -257,12 +258,12 @@ export function DriverDashboard() {
       setSelectedMission((prev) => (prev ? { ...prev, status } : prev))
 
       if (status === 'in_progress') {
-        pushNotification('Mission demarree', `La mission ${mission.id} est maintenant en cours.`)
+        pushNotification('Mission dÃ©marrÃ©e', `Votre mission est maintenant en cours.`)
       }
 
       if (status === 'completed') {
         const completedMission = { ...mission, status: 'completed' }
-        pushNotification('Livraison confirmee', `Mission ${mission.id} livree. Ouverture du suivi GPS.`)
+        pushNotification('Livraison confirmÃ©e', `Livraison effectuÃ©e. Ouverture du suivi GPS.`)
         setCurrentTrackingMission(completedMission)
         navigate('/driver/tracking')
       }
@@ -282,12 +283,12 @@ export function DriverDashboard() {
     setSelectedMission(incomingMission)
     setActiveTab('assigned')
     setIncomingMission(null)
-    pushNotification('Mission acceptee', `Vous avez accepte ${incomingMission.id}.`)
+    pushNotification('Mission acceptÃ©e', `Vous avez acceptÃ© la mission : ${incomingMission.title}.`)
   }
 
   function dismissIncomingMission() {
     if (!incomingMission) return
-    pushNotification('Mission ignoree', `Vous avez ignore ${incomingMission.id}.`)
+    pushNotification('Mission ignorÃ©e', `Vous avez ignorÃ© la mission : ${incomingMission.title}.`)
     setIncomingMission(null)
   }
 
@@ -302,10 +303,10 @@ export function DriverDashboard() {
 
   function getStatusLabel(status) {
     const labels = {
-      assigned: 'Assignée',
+      assigned: 'A realiser',
       in_progress: 'En cours',
-      delivered: 'Livrée',
-      completed: 'Terminée',
+      delivered: 'Livree',
+      completed: 'Terminee',
     }
     return labels[status] || status
   }
@@ -315,8 +316,8 @@ export function DriverDashboard() {
 
     const content = [
       'CAMIONSUF - E-TICKET',
-      `Mission: ${selectedMission.id}`,
-      `Client: ${selectedMission.customer}`,
+      `Commande pour ${selectedMission.customer}`,
+      `Materiau: ${selectedMission.title}`,
       `Statut: ${selectedMission.status}`,
       `Gain: ${selectedMission.price} FCFA`,
       `Date: ${new Date().toLocaleString('fr-FR')}`,
@@ -333,372 +334,254 @@ export function DriverDashboard() {
     URL.revokeObjectURL(url)
   }
 
+  // Mission active en cours
+  const currentMission = useMemo(() => missionPool.find(m => m.status === 'in_progress'), [missionPool])
+
+  const driverName =
+    auth.currentUser?.displayName ||
+    auth.currentUser?.email?.split('@')[0] ||
+    user?.name ||
+    'Chauffeur'
+  const today = new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })
+
   return (
     <div className="app driver-dashboard">
       <BrandHeader />
       <main className="page driver-dashboard__page">
 
-        {/* ══ HEADER COMPACT ══ */}
+        {/* â•â• EN-TÃŠTE â•â• */}
         <header className="db-header">
           <div className="db-header__left">
-            <div className="db-avatar">
-              {(user?.name || 'C').charAt(0).toUpperCase()}
-            </div>
+            <div className="db-avatar">{driverName[0]?.toUpperCase() ?? '?'}</div>
             <div>
-              <h1 className="db-header__name">{user?.name || 'Chauffeur'}</h1>
-              <p className="db-header__date">
-                {new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}
-              </p>
+              <p className="db-header__name">Bonjour, {driverName}</p>
+              <p className="db-header__date">{today}</p>
             </div>
           </div>
-          <span className="db-status-badge">
+          <div className="db-status-badge">
             <span className="db-status-badge__dot"></span>
-            En service
-          </span>
+            En ligne
+          </div>
         </header>
 
-        {/* ══ STATS STRIP ══ */}
+        {/* â•â• STATISTIQUES â•â• */}
         <div className="db-stats-strip">
-          <div className="db-stat">
-            <strong className="db-stat__value">{stats.total}</strong>
-            <span className="db-stat__label">Missions</span>
+          <div className="db-stat db-stat--info">
+            <span className="db-stat__value">{stats.total}</span>
+            <span className="db-stat__label">Total missions</span>
           </div>
           <div className="db-stat db-stat--warning">
-            <strong className="db-stat__value">{stats.inProgress}</strong>
+            <span className="db-stat__value">{stats.inProgress}</span>
             <span className="db-stat__label">En cours</span>
           </div>
           <div className="db-stat db-stat--info">
-            <strong className="db-stat__value">{stats.assigned}</strong>
-            <span className="db-stat__label">Assignées</span>
+            <span className="db-stat__value">{stats.assigned}</span>
+            <span className="db-stat__label">A realiser</span>
           </div>
           <div className="db-stat db-stat--success">
-            <strong className="db-stat__value">{stats.delivered}</strong>
-            <span className="db-stat__label">Livrées</span>
+            <span className="db-stat__value">{stats.delivered}</span>
+            <span className="db-stat__label">Livrees</span>
           </div>
           <div className="db-stat db-stat--accent">
-            <strong className="db-stat__value">{stats.todayRevenue.toLocaleString('fr-FR')}</strong>
-            <span className="db-stat__label">F CFA gagné</span>
+            <span className="db-stat__value">{stats.todayRevenue > 0 ? stats.todayRevenue.toLocaleString('fr-FR') + ' F' : '-'}</span>
+            <span className="db-stat__label">FCFA gagnes</span>
           </div>
         </div>
 
-        {/* ══ INCOMING MISSION ALERT ══ */}
-          {incomingMission && (
-            <section className="incoming-mission-alert" role="status" aria-live="polite">
-              <div className="incoming-mission-alert__header">
-                <div className="incoming-mission-alert__badge">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                    <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    <path d="M13.73 21a2 2 0 01-3.46 0" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                  <span>Nouvelle mission</span>
-                </div>
-                <span className="incoming-mission-alert__id">{incomingMission.id}</span>
-              </div>
-
-              <div className="incoming-mission-alert__content">
-                <h3 className="incoming-mission-alert__title">{incomingMission.title}</h3>
-                
-                <div className="incoming-mission-alert__route">
-                  <div className="route-point route-point--pickup">
-                    <span className="route-point__icon">📍</span>
-                    <div className="route-point__info">
-                      <span className="route-point__label">Départ</span>
-                      <p className="route-point__address">{incomingMission.pickup}</p>
-                    </div>
-                  </div>
-                  <div className="route-connector"></div>
-                  <div className="route-point route-point--dropoff">
-                    <span className="route-point__icon">🎯</span>
-                    <div className="route-point__info">
-                      <span className="route-point__label">Arrivée</span>
-                      <p className="route-point__address">{incomingMission.dropoff}</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="incoming-mission-alert__meta">
-                  <div className="meta-item">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                      <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                      <circle cx="12" cy="7" r="4" stroke="currentColor" strokeWidth="2"/>
-                    </svg>
-                    <span>{incomingMission.volumeLabel}</span>
-                  </div>
-                  <div className="meta-item">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                      <circle cx="12" cy="10" r="3" stroke="currentColor" strokeWidth="2"/>
-                      <path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 10-16 0c0 3 2.7 6.9 8 11.7z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                    <span>{incomingMission.distance} km</span>
-                  </div>
-                  <div className="meta-item">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                      <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/>
-                      <path d="M12 6v6l4 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                    </svg>
-                    <span>{incomingMission.duration} min</span>
-                  </div>
-                  <div className="meta-item meta-item--price">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                      <line x1="12" y1="1" x2="12" y2="23" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                      <path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                    <strong>{incomingMission.price.toLocaleString('fr-FR')} FCFA</strong>
-                  </div>
-                </div>
-              </div>
-
-              <div className="incoming-mission-alert__actions">
-                <button className="button button--primary button--large" onClick={acceptIncomingMission}>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                    <polyline points="20 6 9 17 4 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                  Accepter la mission
-                </button>
-                <button className="button button--ghost" onClick={dismissIncomingMission}>
-                  Ignorer
-                </button>
-              </div>
-            </section>
-          )}
-
-          {/* ══ MISSIONS ══ */}
-          <section className="db-missions">
-            <div className="db-missions__top">
-              <h2 className="db-missions__title">
-                Mes missions
-                <span className="db-missions__count">{filteredMissions.length}</span>
-              </h2>
-              <div className="db-tabs">
-                {tabOptions.map((tab) => {
-                  const isActive = activeTab === tab.key
-                  return (
-                    <button
-                      key={tab.key}
-                      className={`db-tab ${isActive ? 'db-tab--active' : ''}`}
-                      onClick={() => setActiveTab(tab.key)}
-                    >
-                      {tab.label}
-                    </button>
-                  )
-                })}
+        {/* â•â• ALERTE â€” NOUVELLE MISSION â•â• */}
+        {incomingMission && (
+          <section className="incoming-mission-alert" role="status" aria-live="polite">
+            <div className="incoming-mission-alert__header">
+              <div className="incoming-mission-alert__badge">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                  <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M13.73 21a2 2 0 01-3.46 0" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+                <span>Nouvelle mission disponible</span>
               </div>
             </div>
-
-            {loading && <p className="db-loading">Actualisation…</p>}
-
-            <div className="db-mission-list">
-              {filteredMissions.length === 0 ? (
-                <div className="db-empty">
-                  <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
-                    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5"/>
-                    <path d="M12 8v4M12 16h.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                  </svg>
-                  <p>Aucune mission pour ce filtre.</p>
+            <div className="incoming-mission-alert__content">
+              <h3 className="incoming-mission-alert__title">{incomingMission.title}</h3>
+              <div className="incoming-mission-alert__route">
+                <div className="route-point">
+                  <span className="route-point__icon">ðŸ“</span>
+                  <div className="route-point__info">
+                    <span className="route-point__label">Chargement</span>
+                    <p className="route-point__address">{incomingMission.pickup}</p>
+                  </div>
                 </div>
-              ) : (
-                filteredMissions.map((mission) => (
-                  <button
-                    key={mission.id}
-                    className={`db-mission-item db-mission-item--${mission.status?.toLowerCase() || 'assigned'}`}
-                    onClick={() => openModal(mission)}
-                  >
-                    <div className="db-mission-item__left">
-                      <span className={`db-pill db-pill--${mission.status?.toLowerCase() || 'assigned'}`}>
-                        {getStatusLabel(mission.status)}
-                      </span>
-                      <div className="db-mission-item__info">
-                        <strong className="db-mission-item__title">{mission.title}</strong>
-                        <span className="db-mission-item__id">{mission.id}</span>
-                      </div>
-                    </div>
-
-                    <div className="db-mission-item__route">
-                      <span className="db-route-pt db-route-pt--start">
-                        <span className="db-route-pt__dot"></span>
-                        {mission.pickup}
-                      </span>
-                      <span className="db-route-connector"></span>
-                      <span className="db-route-pt db-route-pt--end">
-                        <span className="db-route-pt__dot"></span>
-                        {mission.dropoff}
-                      </span>
-                    </div>
-
-                    <div className="db-mission-item__metrics">
-                      <span>{mission.distance} km</span>
-                      <span>{mission.duration} min</span>
-                    </div>
-
-                    <strong className="db-mission-item__price">
-                      {mission.price.toLocaleString('fr-FR')} F
-                    </strong>
-
-                    <svg className="db-mission-item__chevron" width="18" height="18" viewBox="0 0 24 24" fill="none">
-                      <path d="M9 18l6-6-6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                  </button>
-                ))
-              )}
+                <div className="route-connector"></div>
+                <div className="route-point">
+                  <span className="route-point__icon">ðŸŽ¯</span>
+                  <div className="route-point__info">
+                    <span className="route-point__label">Livraison</span>
+                    <p className="route-point__address">{incomingMission.dropoff}</p>
+                  </div>
+                </div>
+              </div>
+              <div className="incoming-mission-alert__meta">
+                <div className="meta-item">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z" stroke="currentColor" strokeWidth="2"/></svg>
+                  <span>{incomingMission.volumeLabel}</span>
+                </div>
+                <div className="meta-item">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="10" r="3" stroke="currentColor" strokeWidth="2"/><path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 10-16 0c0 3 2.7 6.9 8 11.7z" stroke="currentColor" strokeWidth="2"/></svg>
+                  <span>{incomingMission.distance} km</span>
+                </div>
+                <div className="meta-item">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/><path d="M12 6v6l4 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>
+                  <span>{incomingMission.duration} min</span>
+                </div>
+                <div className="meta-item meta-item--price">
+                  <strong>{incomingMission.price.toLocaleString('fr-FR')} FCFA</strong>
+                </div>
+              </div>
+            </div>
+            <div className="incoming-mission-alert__actions">
+              <button className="button button--primary button--large" onClick={acceptIncomingMission}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><polyline points="20 6 9 17 4 12" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                Accepter
+              </button>
+              <button className="button button--ghost" onClick={dismissIncomingMission}>Ignorer</button>
             </div>
           </section>
+        )}
 
-          {error && <div className="alert alert--danger">{error}</div>}
-        </main>
-
-      {/* ══ MISSION MODAL ══ */}
-      {modalOpen && selectedMission && (
-        <div
-          className="mission-modal__overlay"
-          onClick={closeModal}
-          role="dialog"
-          aria-modal="true"
-          aria-label="Détails de la mission"
-        >
-          <div className="mission-modal" onClick={(e) => e.stopPropagation()}>
-
-            {/* Header */}
-            <div className="mission-modal__header">
-              <div className="mission-modal__header-top">
-                <div>
-                  <h2 className="mission-modal__title">{selectedMission.title}</h2>
-                  <p className="mission-modal__id">{selectedMission.id}</p>
-                </div>
-                <button className="mission-modal__close" onClick={closeModal} aria-label="Fermer">
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-                    <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
-                  </svg>
-                </button>
-              </div>
-              <span className={`mission-status-pill mission-status-pill--${selectedMission.status?.toLowerCase() || 'assigned'}`}>
-                {getStatusLabel(selectedMission.status)}
+        {/* â•â• MISSION ACTIVE â•â• */}
+        {currentMission && (
+          <div className="db-current-mission">
+            <div className="db-current-mission__header">
+              <h2 className="db-current-mission__title">Mission en cours</h2>
+              <span className="db-badge db-badge--active">
+                <span className="db-status-badge__dot" style={{background:'#fff'}}></span>
+                En Livraison
               </span>
             </div>
-
-            {/* Body */}
-            <div className="mission-modal__body">
-
-              {/* Itinéraire */}
-              <div className="modal-section">
-                <h3 className="modal-section__title">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                    <circle cx="12" cy="10" r="3" stroke="currentColor" strokeWidth="2"/>
-                    <path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 10-16 0c0 3 2.7 6.9 8 11.7z" stroke="currentColor" strokeWidth="2"/>
-                  </svg>
-                  Itinéraire
-                </h3>
-                <div className="modal-route">
-                  <div className="modal-route__point">
-                    <div className="modal-route__dot modal-route__dot--start">A</div>
-                    <div className="modal-route__text">
-                      <span className="modal-route__label">Chargement</span>
-                      <p className="modal-route__address">{selectedMission.pickup}</p>
-                    </div>
-                  </div>
-                  <div className="modal-route__connector">
-                    <div className="modal-route__line"></div>
-                    <span className="modal-route__distance">
-                      {selectedMission.distance} km · {selectedMission.duration} min
-                    </span>
-                  </div>
-                  <div className="modal-route__point">
-                    <div className="modal-route__dot modal-route__dot--end">B</div>
-                    <div className="modal-route__text">
-                      <span className="modal-route__label">Livraison</span>
-                      <p className="modal-route__address">{selectedMission.dropoff}</p>
-                    </div>
-                  </div>
-                </div>
+            <div className="db-current-mission__body">
+              <div className="db-current-mission__row">
+                <span className="db-current-mission__label">MatÃ©riau :</span>
+                <span className="db-current-mission__value">{currentMission.title}</span>
               </div>
-
-              {/* Matériau + Client */}
-              <div className="modal-info-grid">
-                <div className="modal-section">
-                  <h3 className="modal-section__title">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                      <path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z" stroke="currentColor" strokeWidth="2"/>
-                    </svg>
-                    Matériau
-                  </h3>
-                  <p className="modal-info__value">{selectedMission.title}</p>
-                  <p className="modal-info__sub">{selectedMission.volumeLabel}</p>
-                </div>
-                <div className="modal-section">
-                  <h3 className="modal-section__title">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                      <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                      <circle cx="12" cy="7" r="4" stroke="currentColor" strokeWidth="2"/>
-                    </svg>
-                    Client
-                  </h3>
-                  <p className="modal-info__value">{selectedMission.customer}</p>
-                  <a href={`tel:${selectedMission.phone}`} className="modal-phone">{selectedMission.phone}</a>
-                </div>
+              <div className="db-current-mission__row">
+                <span className="db-current-mission__label">Destination :</span>
+                <span className="db-current-mission__value">{currentMission.dropoff}</span>
               </div>
-
-              {/* Rémunération */}
-              <div className="modal-payment">
-                <span className="modal-payment__label">Rémunération</span>
-                <strong className="modal-payment__amount">
-                  {selectedMission.price.toLocaleString('fr-FR')} <span>FCFA</span>
-                </strong>
+              <div className="db-current-mission__row">
+                <span className="db-current-mission__label">Client :</span>
+                <span className="db-current-mission__value">{currentMission.customer}</span>
               </div>
-
+              <div className="db-current-mission__row">
+                <span className="db-current-mission__label">Distance :</span>
+                <span className="db-current-mission__value">{currentMission.distance} km Â· {currentMission.duration} min</span>
+              </div>
             </div>
-
-            {/* Footer / Actions */}
-            <div className="mission-modal__footer">
-              {selectedMission.status === 'assigned' && (
-                <button
-                  className="button button--primary button--large"
-                  onClick={() => { updateMissionStatus(selectedMission, 'in_progress'); closeModal() }}
-                >
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                    <polygon points="5 3 19 12 5 21 5 3" fill="currentColor"/>
-                  </svg>
-                  Démarrer la mission
-                </button>
-              )}
-
-              {selectedMission.status === 'in_progress' && (
-                <button
-                  className="button button--success button--large"
-                  onClick={() => { updateMissionStatus(selectedMission, 'completed'); closeModal() }}
-                >
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                    <polyline points="20 6 9 17 4 12" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                  Confirmer la livraison
-                </button>
-              )}
-
-              <button className="button button--outline" onClick={() => { openTrackingPage(); closeModal() }}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                  <circle cx="12" cy="10" r="3" stroke="currentColor" strokeWidth="2"/>
-                  <path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 10-16 0c0 3 2.7 6.9 8 11.7z" stroke="currentColor" strokeWidth="2"/>
-                </svg>
-                Ouvrir le GPS
-              </button>
-
-              {(selectedMission.status === 'completed' || selectedMission.status === 'delivered') && (
-                <button className="button button--ghost" onClick={downloadTicket}>
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                    <polyline points="7 10 12 15 17 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                    <line x1="12" y1="15" x2="12" y2="3" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                  </svg>
-                  Télécharger l'e-ticket
-                </button>
-              )}
-
-              <button className="button button--ghost" onClick={closeModal}>Fermer</button>
-            </div>
-
+            <button
+              className="db-current-mission__btn"
+              onClick={() => {
+                setCurrentTrackingMission(currentMission)
+                navigate('/driver/tracking')
+              }}
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="10" r="3" stroke="currentColor" strokeWidth="2"/>
+                <path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 10-16 0c0 3 2.7 6.9 8 11.7z" stroke="currentColor" strokeWidth="2"/>
+              </svg>
+              Suivre sur la carte GPS
+            </button>
           </div>
+        )}
+
+        {/* â•â• LISTE DES MISSIONS â•â• */}
+        <div className="db-missions">
+          <div className="db-missions__top">
+            <h2 className="db-missions__title">
+              Toutes les missions
+              <span className="db-missions__count">{filteredMissions.length}</span>
+            </h2>
+            <div className="db-tabs">
+              {tabOptions.map(tab => (
+                <button
+                  key={tab.key}
+                  className={`db-tab${activeTab === tab.key ? ' db-tab--active' : ''}`}
+                  onClick={() => setActiveTab(tab.key)}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {loading && <p className="db-loading">Synchronisation en coursâ€¦</p>}
+          {error && <div className="alert alert--danger" style={{margin:'8px 12px'}}>{error}</div>}
+
+          {!loading && filteredMissions.length === 0 ? (
+            <div className="db-empty">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
+                <path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z" stroke="currentColor" strokeWidth="1.5"/>
+              </svg>
+              <p>Aucune mission dans cette catÃ©gorie</p>
+            </div>
+          ) : (
+            <div className="db-mission-list">
+              {filteredMissions.map(mission => (
+                <button
+                  key={mission.id}
+                  className={`db-mission-item db-mission-item--${mission.status}`}
+                  onClick={() => openModal(mission)}
+                >
+                  <div className="db-mission-item__left">
+                    <span className={`db-pill db-pill--${mission.status}`}>
+                      {getStatusLabel(mission.status)}
+                    </span>
+                    <span className="db-mission-item__id">Commande pour {mission.customer}</span>
+                  </div>
+
+                  <div className="db-mission-item__info">
+                    <span className="db-mission-item__title">{mission.title}</span>
+                    <span className="db-mission-item__id">{mission.customer}</span>
+                  </div>
+
+                  <div className="db-mission-item__route">
+                    <div className="db-route-pt db-route-pt--start">
+                      <span className="db-route-pt__dot"></span>
+                      <span>{mission.pickup}</span>
+                    </div>
+                    <div className="db-route-connector"></div>
+                    <div className="db-route-pt db-route-pt--end">
+                      <span className="db-route-pt__dot"></span>
+                      <span>{mission.dropoff}</span>
+                    </div>
+                  </div>
+
+                  <div className="db-mission-item__metrics">
+                    <span>{mission.distance} km</span>
+                    <span>{mission.duration} min</span>
+                  </div>
+
+                  <div className="db-mission-item__price">
+                    {mission.price.toLocaleString('fr-FR')} <small>FCFA</small>
+                  </div>
+
+                  <svg className="db-mission-item__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <path d="M9 18l6-6-6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </button>
+              ))}
+            </div>
+          )}
         </div>
+
+      </main>
+      <BottomNav />
+
+      {/* â•â• MISSION DETAIL MODAL â•â• */}
+      {modalOpen && selectedMission && (
+        <MissionDetail
+          mission={selectedMission}
+          onClose={() => setModalOpen(false)}
+        />
       )}
 
-      <BottomNav />
     </div>
   )
 }

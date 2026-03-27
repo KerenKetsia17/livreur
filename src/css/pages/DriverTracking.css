@@ -1,107 +1,48 @@
-﻿/* DriverTracking — layout plein écran style Yango */
+﻿/* ═══════════════ DriverTracking — Style Yango ═══════════════ */
 
+/* ── Layout racine ── */
 .trk-root {
   display: flex;
   flex-direction: column;
   height: 100dvh;
-  background: #f4f6f9;
   overflow: hidden;
+  background: #f4f6fa;
+  position: relative;
 }
 
-/* ── Barre du haut ────────────────────── */
-.trk-topbar {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 16px;
-  background: #ffffff;
-  border-bottom: 1px solid #e2e8f0;
-  z-index: 10;
-  flex-shrink: 0;
-}
-
-.trk-back {
-  width: 38px;
-  height: 38px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #f4f6f9;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  cursor: pointer;
-  color: #1a2b3c;
-  flex-shrink: 0;
-}
-
-.trk-back:hover { background: #e8edf4; }
-
-.trk-topbar__center {
-  flex: 1;
-  min-width: 0;
-}
-
-.trk-topbar__title {
-  margin: 0;
-  font-size: 0.92rem;
-  font-weight: 500;
-  color: #1a2b3c;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.trk-topbar__id {
-  margin: 1px 0 0;
-  font-size: 0.72rem;
-  color: #94a3b8;
-  font-weight: 500;
-}
-
-/* Badges statut */
-.trk-badge {
-  padding: 4px 10px;
-  border-radius: 5px;
-  font-size: 0.72rem;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-.trk-badge--in_progress { background: rgba(30,61,107,0.1); color: #1a2b3c; }
-.trk-badge--assigned    { background: rgba(26,43,60,0.08);  color: #1a2b3c; }
-.trk-badge--completed,
-.trk-badge--delivered   { background: #f1f5f9; color: #64748b; }
-.trk-badge--unknown     { background: #f1f5f9; color: #94a3b8; }
-
-/* ── Carte GPS (zone principale) ─────── */
+/* ── Carte — prend toute la zone restante ── */
 .trk-map {
-  flex: 1;
+  flex: 1 1 0;
   position: relative;
   overflow: hidden;
-  min-height: 0;
+  min-height: 200px;
 }
 
-.trk-map > * {
+.trk-map > div,
+.trk-map .leaflet-container {
   width: 100% !important;
   height: 100% !important;
+  position: absolute !important;
+  top: 0;
+  left: 0;
 }
 
+/* Badge LIVE */
 .trk-map__live {
   position: absolute;
   top: 12px;
   right: 12px;
+  z-index: 500;
   display: flex;
   align-items: center;
   gap: 6px;
-  background: #ffffff;
+  background: #fff;
   padding: 6px 12px;
   border-radius: 20px;
-  font-size: 0.78rem;
-  font-weight: 600;
-  color: #1a2b3c;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #1d68d4;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.12);
   pointer-events: none;
 }
 
@@ -109,37 +50,102 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #1a2b3c;
-  animation: trkPulse 2s ease-in-out infinite;
+  background: #1d68d4;
+  animation: trk-pulse 1.8s ease-in-out infinite;
 }
 
-@keyframes trkPulse {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0.4; }
+@keyframes trk-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.5; transform: scale(0.8); }
 }
 
-/* ── Panneau bas avec les infos ────────── */
+/* ── Panneau infos (bas sur mobile, gauche sur desktop) ── */
 .trk-panel {
-  background: #ffffff;
-  border-top: 1px solid #e2e8f0;
-  border-radius: 16px 16px 0 0;
-  padding: 18px 20px 24px;
+  background: #fff;
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  flex-shrink: 0;
-  max-height: 55dvh;
+  gap: 14px;
+  padding: 18px 20px 24px;
+  border-radius: 20px 20px 0 0;
+  border-top: 1px solid #e5eaf2;
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.06);
   overflow-y: auto;
   scrollbar-width: none;
+  max-height: 62dvh;
+  flex-shrink: 0;
+  z-index: 10;
 }
 
 .trk-panel::-webkit-scrollbar { display: none; }
 
-/* Itinéraire */
+/* ── En-tête panneau ── */
+.trk-panel__header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.trk-back {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f4f6fa;
+  border: 1px solid #e5eaf2;
+  border-radius: 10px;
+  cursor: pointer;
+  color: #374151;
+  transition: background 0.15s;
+}
+.trk-back:hover { background: #e9ecf4; }
+
+.trk-panel__title-block {
+  flex: 1;
+  min-width: 0;
+}
+
+.trk-panel__title {
+  margin: 0 0 2px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #111827;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.trk-panel__sub {
+  margin: 0;
+  font-size: 0.7rem;
+  color: #9ca3af;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.trk-badge {
+  flex-shrink: 0;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+/* ── Séparateur ── */
+.trk-sep {
+  border: none;
+  border-top: 1px solid #f0f2f7;
+  margin: 0;
+}
+
+/* ── Itinéraire style Yango ── */
 .trk-route {
   display: flex;
   flex-direction: column;
-  gap: 0;
 }
 
 .trk-route__point {
@@ -151,161 +157,257 @@
 .trk-route__marker {
   width: 26px;
   height: 26px;
+  flex-shrink: 0;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.68rem;
-  font-weight: 600;
-  color: #fff;
-  flex-shrink: 0;
+  margin-top: 2px;
 }
 
-.trk-route__marker--a { background: #1a2b3c; }
-.trk-route__marker--b { background: #1a2b3c; }
+.trk-route__marker--a {
+  background: #ef4444;
+  border: 2px solid #ef4444;
+  /* cercle plein rouge (origine, style Yango) */
+}
+
+.trk-route__marker--b {
+  background: #111827;
+  border: 2px solid #111827;
+  /* cercle plein noir (destination) */
+}
 
 .trk-route__line {
   width: 2px;
-  height: 14px;
-  background: #e2e8f0;
-  margin: 3px 0 3px 12px;
+  height: 20px;
+  background: #d1d5db;
+  margin-left: 12px;
+  margin-top: 3px;
+  margin-bottom: 3px;
 }
 
 .trk-route__text { flex: 1; }
 
 .trk-route__label {
   display: block;
-  font-size: 0.65rem;
-  font-weight: 500;
-  color: #94a3b8;
+  font-size: 0.62rem;
+  font-weight: 600;
+  color: #9ca3af;
   text-transform: uppercase;
-  letter-spacing: 0.07em;
+  letter-spacing: 0.5px;
   margin-bottom: 2px;
 }
 
 .trk-route__addr {
   margin: 0;
-  font-size: 0.85rem;
+  font-size: 0.875rem;
   font-weight: 600;
-  color: #1a2b3c;
-  line-height: 1.4;
+  color: #111827;
+  line-height: 1.35;
 }
 
-/* Métriques */
+/* ── Métriques (distance / temps / gain) ── */
 .trk-metrics {
   display: flex;
-  align-items: center;
-  background: #f4f6f9;
-  border-radius: 10px;
-  padding: 12px 16px;
-  gap: 0;
+  gap: 8px;
 }
 
 .trk-metric {
   flex: 1;
+  background: #f4f6fa;
+  border-radius: 12px;
+  padding: 10px 8px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
+  gap: 5px;
 }
 
+.trk-metric__icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.trk-metric__icon--blue  { background: #1d68d4; color: #fff; }
+.trk-metric__icon--dark  { background: #1e3a5f; color: #fff; }
+.trk-metric__icon--green { background: #16a34a; color: #fff; }
+
 .trk-metric strong {
-  font-size: 1rem;
-  font-weight: 600;
-  color: #1a2b3c;
-  letter-spacing: -0.01em;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #111827;
+  text-align: center;
+  line-height: 1.1;
 }
 
 .trk-metric span {
-  font-size: 0.68rem;
+  font-size: 0.62rem;
   font-weight: 600;
-  color: #94a3b8;
+  color: #9ca3af;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.4px;
 }
 
-.trk-metric--sep {
-  flex: 0;
-  width: 1px;
-  height: 28px;
-  background: #e2e8f0;
-  flex-direction: row;
-}
-
-/* Client */
+/* ── Client ── */
 .trk-customer {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 0.83rem;
-  color: #64748b;
-  font-weight: 500;
-}
-
-.trk-customer svg { color: #94a3b8; flex-shrink: 0; }
-
-.trk-customer__phone {
-  margin-left: auto;
-  color: #1a2b3c;
-  font-weight: 500;
-  text-decoration: none;
-  font-size: 0.83rem;
-}
-
-.trk-customer__phone:hover { text-decoration: underline; }
-
-/* Boutons action */
-.trk-actions {
-  display: flex;
   gap: 10px;
 }
 
-.trk-btn {
+.trk-customer__avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #dbeafe;
+  color: #1d68d4;
+  font-size: 0.95rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.trk-customer__info {
   flex: 1;
-  padding: 14px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.trk-customer__name { font-size: 0.875rem; font-weight: 600; color: #111827; }
+.trk-customer__sub  { font-size: 0.65rem; color: #9ca3af; }
+
+.trk-call-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 13px;
+  background: #1d68d4;
+  color: #fff;
   border-radius: 10px;
-  font-size: 0.92rem;
-  font-weight: 500;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background 0.15s;
+  flex-shrink: 0;
+}
+.trk-call-btn:hover { background: #1558b0; }
+
+/* ── Note / instructions ── */
+.trk-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px 12px;
+  background: #f9fafb;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  font-size: 0.78rem;
+  color: #6b7280;
+  line-height: 1.4;
+}
+
+.trk-note svg { flex-shrink: 0; margin-top: 1px; color: #9ca3af; }
+
+/* ── Actions ── */
+.trk-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.trk-btn {
+  width: 100%;
+  padding: 15px;
   border: none;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 700;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s;
   font-family: inherit;
-  transition: background 0.15s ease, transform 0.1s ease;
 }
 
+.trk-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+.trk-btn:not(:disabled):active { transform: scale(0.98); }
+
+/* Rouge style Yango CTA */
 .trk-btn--primary {
-  background: #1a2b3c;
-  color: #ffffff;
+  background: #ef4444;
+  color: #fff;
+  border-radius: 50px;
+  font-size: 0.95rem;
+}
+.trk-btn--primary:hover:not(:disabled) {
+  background: #dc2626;
+  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.3);
 }
 
-.trk-btn--primary:hover {
-  background: #1a2b3c;
+.trk-btn--ghost {
+  background: transparent;
+  color: #6b7280;
+  font-size: 0.8rem;
+  padding: 8px;
+  font-weight: 500;
+}
+.trk-btn--ghost:hover { color: #374151; }
+
+.trk-done {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px;
+  background: #dcfce7;
+  border-radius: 12px;
+  color: #15803d;
+  font-size: 0.875rem;
+  font-weight: 700;
 }
 
-.trk-btn--primary:active {
-  transform: scale(0.98);
+/* ── Spinner ── */
+.trk-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255,255,255,0.4);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: trk-spin 0.7s linear infinite;
 }
+@keyframes trk-spin { to { transform: rotate(360deg) } }
 
-/* ── Responsive ────────────────────────── */
+/* ── Desktop : panneau gauche + carte droite (comme Yango) ── */
 @media (min-width: 768px) {
   .trk-root {
     flex-direction: row;
   }
-  
-  .trk-topbar { display: none; }
-  
-  .trk-panel {
-    width: 360px;
-    flex: none;
-    max-height: 100dvh;
-    border-radius: 0;
-    border-right: 1px solid #e2e8f0;
-    border-top: none;
-    order: -1;
-    padding-top: 24px;
-  }
 
+  /* Sur desktop, panneau a gauche, carte a droite */
   .trk-map {
+    order: 2;
     flex: 1;
   }
-}
 
+  .trk-panel {
+    order: 1;
+    width: 380px;
+    flex-shrink: 0;
+    max-height: 100dvh;
+    border-radius: 0;
+    border-right: 1px solid #e5eaf2;
+    border-top: none;
+    box-shadow: 2px 0 12px rgba(0,0,0,0.06);
+    padding: 24px 24px 32px;
+    gap: 18px;
+  }
+}

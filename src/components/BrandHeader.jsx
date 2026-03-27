@@ -1,6 +1,7 @@
 import { Link, useLocation } from 'react-router-dom'
 import logoImg from '../assets/logoimg.png'
-import { getDriverNotifications } from '../utils/storage'
+import { getDriverNotifications, getCurrentUser } from '../utils/storage'
+import { auth } from '../firebase'
 
 const navItems = [
   { to: '/driver/missions', label: 'Missions' },
@@ -10,6 +11,15 @@ const navItems = [
 export function BrandHeader() {
   const location = useLocation()
   const unreadCount = getDriverNotifications().filter((item) => item.unread).length
+
+  const storedUser = getCurrentUser()
+  const firebaseUser = auth.currentUser
+  const displayName =
+    firebaseUser?.displayName ||
+    firebaseUser?.email?.split('@')[0] ||
+    storedUser?.name ||
+    'Chauffeur'
+  const initial = displayName[0]?.toUpperCase() ?? '?'
 
   return (
     <header className="topbar">
@@ -40,6 +50,10 @@ export function BrandHeader() {
           <span className="topbar__actionIcon" aria-hidden>🔔</span>
           {unreadCount > 0 && <span className="topbar__badge">{unreadCount > 9 ? '9+' : unreadCount}</span>}
         </Link>
+        <div className="topbar__user">
+          <div className="topbar__avatar">{initial}</div>
+          <span className="topbar__username">{displayName}</span>
+        </div>
       </div>
     </header>
   )

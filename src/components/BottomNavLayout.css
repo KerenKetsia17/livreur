@@ -1,0 +1,62 @@
+/* ── Bottom Navigation Bar — Layout de base ──────────────── */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  display: flex;
+  justify-content: space-around;
+  align-items: stretch;
+  padding: 0 8px env(safe-area-inset-bottom, 0);
+  min-height: 64px;
+  background: #ffffff;
+  border-top: 1px solid #e8ecf2;
+  box-shadow: 0 -4px 20px rgba(26, 43, 60, 0.08);
+}
+
+.bottom-nav__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  gap: 4px;
+  padding: 8px 4px 10px;
+  text-decoration: none;
+  border-radius: 10px;
+  margin: 6px 3px;
+  color: #94a3b8;
+  transition: all 0.15s ease;
+}
+
+.bottom-nav__item:hover {
+  color: #1a2b3c;
+  background: #f8fafc;
+}
+
+.bottom-nav__item--active {
+  color: #1a2b3c;
+  background: #f1f5f9;
+}
+
+.bottom-nav__item--active .bottom-nav__icon {
+  transform: scale(1.1);
+}
+
+.bottom-nav__icon {
+  font-size: 1.3rem;
+  line-height: 1;
+  transition: transform 0.15s ease;
+}
+
+.bottom-nav__label {
+  font-size: 0.67rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  line-height: 1;
+}
+
+.bottom-nav__item--active .bottom-nav__label {
+  color: #f59e0b;
+}

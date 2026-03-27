@@ -801,39 +801,59 @@
 .login__brand {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 24px;
+  gap: 14px;
+  margin-bottom: 28px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid #e8ecf2;
 }
 
 .login__logo {
-  width: 60px;
-  height: 60px;
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.08);
-  padding: 10px;
+  width: 52px;
+  height: 52px;
+  border-radius: 12px;
+  background: #f1f5f9;
+  padding: 8px;
+  object-fit: contain;
+}
+
+.login__brand h1 {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #1a2b3c;
 }
 
 .login__subtitle {
-  margin: 4px 0 0;
-  color: rgba(248, 250, 252, 0.7);
+  margin: 3px 0 0;
+  font-size: 0.82rem;
+  color: #64748b;
 }
 
 .login__form {
   display: grid;
-  gap: 14px;
+  gap: 16px;
 }
 
 .login__form .field span {
   font-weight: 600;
-  color: #2e4a7f;
+  color: #1a2b3c;
+  font-size: 0.88rem;
 }
 
 .login__form .field input {
-  border: 1px solid #dbe5fe;
+  border: 1.5px solid #e2e8f0;
   border-radius: 8px;
-  padding: 10px 12px;
-  color: #102144;
+  padding: 11px 14px;
+  color: #1a2b3c;
   background: #fff;
+  font-size: 0.95rem;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.login__form .field input:focus {
+  outline: none;
+  border-color: #1a2b3c;
+  box-shadow: 0 0 0 3px rgba(26, 43, 60, 0.08);
 }
 
 .alert--danger {
@@ -3573,12 +3593,16 @@
 
 /* Palette locale */
 :root {
-  --db-primary:   #1a2b3c;   /* Couleur unique — texte et actions */
-  --db-muted:     #64748b;   /* ardoise — textes secondaires */
-  --db-subtle:    #94a3b8;   /* gris clair — métadonnées */
-  --db-border:    #e2e8f0;   /* bordure neutre */
-  --db-surface:   #ffffff;   /* fond carte */
-  --db-page:      #f4f6f9;   /* fond page */
+  --db-primary:   #1a2b3c;   /* Couleur principale */
+  --db-muted:     #64748b;
+  --db-subtle:    #94a3b8;
+  --db-border:    #e2e8f0;
+  --db-surface:   #ffffff;
+  --db-page:      #f4f6f9;
+  /* Statuts */
+  --db-assigned:  #3b82f6;   /* bleu — Assignée */
+  --db-progress:  #f59e0b;   /* ambre — En cours */
+  --db-done:      #16a34a;   /* vert — Livrée */
 }
 
 .driver-dashboard__page {
@@ -3641,21 +3665,26 @@
   align-items: center;
   gap: 7px;
   padding: 6px 13px;
-  background: rgba(26, 43, 60, 0.08);
-  color: var(--db-primary);
+  background: rgba(22, 163, 74, 0.1);
+  color: #15803d;
   border-radius: 6px;
   font-size: 0.78rem;
   font-weight: 600;
   letter-spacing: 0.02em;
-  border: 1px solid rgba(26, 43, 60, 0.15);
+  border: 1px solid rgba(22, 163, 74, 0.25);
 }
 
 .db-status-badge__dot {
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: var(--db-primary);
-  opacity: 0.7;
+  background: var(--db-done);
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.6; transform: scale(0.85); }
 }
 
 /* ── Stats strip ────────────────────────────────────────── */
@@ -3668,19 +3697,18 @@
 .db-stat {
   background: var(--db-surface);
   border: 1px solid var(--db-border);
+  border-top: 3px solid var(--db-border);
   border-radius: 8px;
   padding: 14px 12px 12px;
   display: flex;
   flex-direction: column;
   gap: 5px;
-  /* Pas de border-top colorée — épuré */
 }
 
-/* Toutes les variantes utilisent la même couleur d'accent */
-.db-stat--warning,
-.db-stat--info,
-.db-stat--success,
-.db-stat--accent { border-top-color: var(--db-primary); }
+.db-stat--warning { border-top-color: var(--db-progress); }
+.db-stat--info    { border-top-color: var(--db-assigned); }
+.db-stat--success { border-top-color: var(--db-done); }
+.db-stat--accent  { border-top-color: var(--db-primary); }
 
 .db-stat__value {
   font-size: 1.4rem;
@@ -3689,6 +3717,10 @@
   line-height: 1;
   letter-spacing: -0.02em;
 }
+
+.db-stat--warning .db-stat__value { color: var(--db-progress); }
+.db-stat--info    .db-stat__value { color: var(--db-assigned); }
+.db-stat--success .db-stat__value { color: var(--db-done); }
 
 .db-stat__label {
   font-size: 0.68rem;
@@ -3703,8 +3735,7 @@
   background: var(--db-surface);
   border: 1px solid var(--db-border);
   border-radius: 10px;
-  overflow: hidden;
-  /* Enlever l'aspect carte trop rigide pour les items internes */
+  overflow: visible;
 }
 
 .db-missions__top {
@@ -3784,10 +3815,12 @@
   margin: 0;
 }
 
-/* ── Mission list — style liste propre (pas de tableau) ─── */
+/* ── Mission list — cartes avec statut coloré ─────────── */
 .db-mission-list {
-  overflow: hidden;
-  padding: 8px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
 }
 
 .db-mission-item {
@@ -3795,15 +3828,16 @@
   grid-template-columns: auto 1fr auto auto auto;
   align-items: center;
   gap: 14px;
-  padding: 12px 20px;
+  padding: 14px 16px;
   width: 100%;
-  background: transparent;
-  border: none;
+  background: var(--db-surface);
+  border: 1px solid var(--db-border);
+  border-left: 3px solid var(--db-border);
+  border-radius: 8px;
   cursor: pointer;
   font-family: inherit;
   text-align: left;
-  transition: background 0.1s ease;
-  border-radius: 0;
+  transition: box-shadow 0.15s ease, transform 0.1s ease;
 }
 
 .db-mission-item + .db-mission-item {
@@ -3811,12 +3845,15 @@
 }
 
 .db-mission-item:hover {
-  background: #f8fafc;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  transform: translateY(-1px);
 }
 
-/* Le statut est visible via la pill — pas de bordure latérale colorée */
+/* Bordure gauche colorée par statut */
+.db-mission-item--assigned    { border-left-color: var(--db-assigned); }
+.db-mission-item--in_progress { border-left-color: var(--db-progress); }
 .db-mission-item--delivered,
-.db-mission-item--completed   { opacity: 0.7; }
+.db-mission-item--completed   { border-left-color: var(--db-done);     opacity: 0.8; }
 
 .db-mission-item__left {
   display: flex;
@@ -3837,11 +3874,11 @@
   text-transform: uppercase;
 }
 
-/* Monochrome: même teinte, intensité variable */
-.db-pill--assigned    { background: rgba(26, 43, 60, 0.1);  color: var(--db-primary); }
-.db-pill--in_progress { background: rgba(26, 43, 60, 0.12);  color: var(--db-primary); }
+/* Pills colorées par statut */
+.db-pill--assigned    { background: rgba(59,130,246,0.12);  color: #1d4ed8;  border: 1px solid rgba(59,130,246,0.25); }
+.db-pill--in_progress { background: rgba(245,158,11,0.12);  color: #b45309;  border: 1px solid rgba(245,158,11,0.3); }
 .db-pill--delivered,
-.db-pill--completed   { background: #f1f5f9;                  color: var(--db-subtle); }
+.db-pill--completed   { background: rgba(22,163,74,0.12);   color: #15803d;  border: 1px solid rgba(22,163,74,0.25); }
 
 .db-mission-item__info {
   display: flex;
@@ -3966,14 +4003,15 @@
 
 /* ── Incoming mission alert ──────────────────────────────── */
 .incoming-mission-alert {
-  background: var(--db-surface);
-  border: 1px solid var(--db-border);
-  border-left: 4px solid var(--db-primary);
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-left: 4px solid var(--db-progress);
   border-radius: 8px;
   padding: 18px 20px;
   display: flex;
   flex-direction: column;
   gap: 14px;
+  box-shadow: 0 2px 12px rgba(245, 158, 11, 0.15);
 }
 
 .incoming-mission-alert__header {
@@ -3987,7 +4025,7 @@
   align-items: center;
   gap: 8px;
   padding: 5px 11px;
-  background: var(--db-primary);
+  background: var(--db-progress);
   color: #fff;
   border-radius: 5px;
   font-size: 0.75rem;
@@ -4123,13 +4161,13 @@
 }
 
 .button--success {
-  background: var(--db-primary);
+  background: var(--db-done);
   color: #fff;
-  box-shadow: 0 2px 8px rgba(26, 43, 60, 0.2);
+  box-shadow: 0 2px 8px rgba(22, 163, 74, 0.3);
 }
 
 .button--success:hover {
-  background: var(--db-primary);
+  background: #15803d;
 }
 
 .button--outline {
@@ -4346,8 +4384,8 @@
 }
 
 /* Même couleur pour départ et arrivée — le label distingue */
-.modal-route__dot--start { background: var(--db-primary); }
-.modal-route__dot--end   { background: var(--db-primary); }
+.modal-route__dot--start { background: var(--db-assigned); }
+.modal-route__dot--end   { background: var(--db-done); }
 
 .modal-route__text { flex: 1; }
 
@@ -4457,10 +4495,227 @@
   letter-spacing: 0.04em;
 }
 
-.mission-status-pill--assigned    { background: rgba(26, 43, 60, 0.1);  color: var(--db-primary); }
-.mission-status-pill--in_progress { background: rgba(26, 43, 60, 0.12);  color: var(--db-primary); }
+.mission-status-pill--assigned    { background: rgba(59,130,246,0.12);  color: #1d4ed8;  border: 1px solid rgba(59,130,246,0.25); }
+.mission-status-pill--in_progress { background: rgba(245,158,11,0.12);  color: #b45309;  border: 1px solid rgba(245,158,11,0.3); }
 .mission-status-pill--delivered,
-.mission-status-pill--completed   { background: #f1f5f9;                  color: var(--db-subtle); }
+.mission-status-pill--completed   { background: rgba(22,163,74,0.12);   color: #15803d;  border: 1px solid rgba(22,163,74,0.25); }
+
+/* ══════════════════════════════════════════════════════════
+   INTERFACE SIMPLIFIÉE — MISSIONS
+   Design épuré inspiré de la maquette utilisateur
+══════════════════════════════════════════════════════════ */
+
+/* ── En-tête simple ─────────────────────────────────────── */
+.db-simple-header {
+  text-align: center;
+  padding: 32px 0 24px;
+}
+
+.db-simple-header__title {
+  margin: 0 0 8px;
+  font-size: 2rem;
+  font-weight: 600;
+  color: var(--db-primary);
+  letter-spacing: -0.02em;
+}
+
+.db-simple-header__subtitle {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--db-muted);
+  font-weight: 500;
+}
+
+/* ── Mission en cours (carte principale) ───────────────── */
+.db-current-mission {
+  background: #ffffff;
+  border: 1px solid var(--db-border);
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.db-current-mission__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.db-current-mission__title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--db-primary);
+}
+
+.db-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.db-badge--active {
+  background: var(--db-done);
+  color: #ffffff;
+}
+
+.db-current-mission__body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--db-border);
+}
+
+.db-current-mission__row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.db-current-mission__label {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--db-primary);
+  min-width: 140px;
+  flex-shrink: 0;
+}
+
+.db-current-mission__value {
+  font-size: 0.95rem;
+  color: var(--db-muted);
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+.db-current-mission__btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 24px;
+  background: var(--db-done);
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.db-current-mission__btn:hover {
+  background: #15803d;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
+}
+
+.db-current-mission__btn svg {
+  flex-shrink: 0;
+}
+
+/* ── Missions à venir ───────────────────────────────────── */
+.db-upcoming {
+  margin-top: 32px;
+}
+
+.db-upcoming__title {
+  margin: 0 0 16px;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--db-primary);
+}
+
+.db-upcoming__list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.db-upcoming-card {
+  background: #ffffff;
+  border: 1px solid var(--db-border);
+  border-radius: 12px;
+  padding: 20px;
+  position: relative;
+}
+
+.db-upcoming-card__title {
+  margin: 0 0 12px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--db-primary);
+}
+
+.db-upcoming-card__address {
+  margin: 0 0 6px;
+  font-size: 0.95rem;
+  color: var(--db-muted);
+  font-weight: 500;
+}
+
+.db-upcoming-card__packages {
+  margin: 0 0 16px;
+  font-size: 0.9rem;
+  color: var(--db-subtle);
+  font-weight: 500;
+}
+
+.db-upcoming-card__badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 12px;
+  background: #f1f5f9;
+  color: var(--db-muted);
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-bottom: 16px;
+}
+
+.db-upcoming-card__btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 12px 18px;
+  background: #ffffff;
+  border: 1.5px solid var(--db-border);
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--db-primary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: inherit;
+}
+
+.db-upcoming-card__btn:hover {
+  border-color: var(--db-primary);
+  background: rgba(26, 43, 60, 0.02);
+}
+
+.db-upcoming-card__btn svg {
+  flex-shrink: 0;
+  color: var(--db-subtle);
+  transition: transform 0.15s ease;
+}
+
+.db-upcoming-card__btn:hover svg {
+  transform: translateX(3px);
+  color: var(--db-primary);
+}
 
 /* ── Responsive ─────────────────────────────────────────── */
 @media (min-width: 640px) {
@@ -4493,8 +4748,13 @@
 
   .db-mission-item {
     grid-template-columns: auto 1fr auto;
-    padding: 12px 14px;
+    padding: 12px 12px;
     gap: 10px;
+  }
+
+  .db-mission-list {
+    padding: 8px;
+    gap: 6px;
   }
 
   .db-mission-item__route {
@@ -4528,5 +4788,866 @@
 
   .modal-info-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+
+/* ══════════════════════════════════════════════════════════
+   DESIGN GLOBAL — CORRECTIFS & AMÉLIORATIONS VISUELLES
+   Styles manquants pour Landing.jsx + polish général
+══════════════════════════════════════════════════════════ */
+
+/* ── Variables de design ──────────────────────────────── */
+:root {
+  --lp-primary:   #1a2b3c;
+  --lp-accent:    #f59e0b;
+  --lp-muted:     #64748b;
+  --lp-subtle:    #94a3b8;
+  --lp-border:    #e2e8f0;
+  --lp-page:      #f8fafc;
+  --lp-success:   #16a34a;
+  --db-primary:   #1a2b3c;
+  --db-muted:     #64748b;
+  --db-subtle:    #94a3b8;
+  --db-border:    #e2e8f0;
+  --db-done:      #16a34a;
+  --db-progress:  #f59e0b;
+  --db-assigned:  #3b82f6;
+}
+
+/* ══ LANDING — HEADER ══════════════════════════════════ */
+
+.landing__header-left {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.landing__contact {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.83rem;
+  font-weight: 500;
+  color: var(--lp-muted);
+}
+
+.landing__contact a {
+  color: var(--lp-muted);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.landing__contact a:hover { color: var(--lp-primary); }
+
+.landing__contact-icon {
+  font-size: 0.85rem;
+  line-height: 1;
+}
+
+/* ══ LANDING — HERO ════════════════════════════════════ */
+
+.landing__hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 16px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.92);
+  width: fit-content;
+}
+
+.landing__hero-image-wrapper {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.landing__hero-float {
+  position: absolute;
+  z-index: 2;
+}
+
+.landing__hero-float--1 {
+  top: 20px;
+  left: -16px;
+  animation: floatIn 0.6s 0.3s ease both;
+}
+
+.landing__hero-float--2 {
+  bottom: 28px;
+  right: -12px;
+  animation: floatIn 0.6s 0.5s ease both;
+}
+
+@keyframes floatIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.landing__float-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 10px 14px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  min-width: 155px;
+  white-space: nowrap;
+}
+
+.landing__float-icon {
+  font-size: 1.25rem;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.landing__float-card strong {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #0f1f3d;
+  margin: 0;
+}
+
+.landing__float-card p {
+  margin: 2px 0 0;
+  font-size: 0.7rem;
+  color: #64748b;
+}
+
+/* ── Hero download buttons ─────────────────────────────── */
+
+.landing__hero-download {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.landing__download-label {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.55);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.landing__download-buttons {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.landing__download-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+  font-family: inherit;
+  text-align: left;
+}
+
+.landing__download-btn:hover {
+  background: rgba(255, 255, 255, 0.18);
+  border-color: rgba(255, 255, 255, 0.35);
+}
+
+.landing__download-btn small {
+  display: block;
+  font-size: 0.64rem;
+  color: rgba(255, 255, 255, 0.65);
+  font-weight: 400;
+  line-height: 1;
+}
+
+.landing__download-btn strong {
+  display: block;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #fff;
+  line-height: 1.3;
+}
+
+.landing__download-btn--apple,
+.landing__download-btn--google {
+  /* variants futures */
+  opacity: 1;
+}
+
+/* ══ LANDING — STATS ═══════════════════════════════════ */
+
+.landing__stats {
+  background: #ffffff;
+  border-bottom: 1px solid var(--lp-border);
+}
+
+.landing__stats-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 40px 24px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+}
+
+.landing__stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 20px;
+  border-right: 1px solid var(--lp-border);
+  text-align: center;
+}
+
+.landing__stat-item:last-child {
+  border-right: none;
+}
+
+.landing__stat-value {
+  font-size: 2.2rem;
+  font-weight: 600;
+  color: var(--lp-primary);
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.landing__stat-label {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--lp-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ══ LANDING — SECTION CONTAINERS ══════════════════════ */
+
+.landing__features-container,
+.landing__how-container,
+.landing__testimonials-container,
+.landing__about-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 72px 32px;
+}
+
+.landing__section-subtitle {
+  margin: 0 auto;
+  max-width: 600px;
+  font-size: 1rem;
+  color: var(--lp-muted);
+  line-height: 1.7;
+}
+
+/* ══ LANDING — STEPS (HOW IT WORKS) ════════════════════ */
+
+.landing__step-content {
+  padding-top: 4px;
+  flex: 1;
+  text-align: center;
+}
+
+.landing__step-content h3 {
+  margin: 0 0 8px;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--lp-primary);
+}
+
+.landing__step-content p {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--lp-muted);
+  line-height: 1.65;
+}
+
+.landing__step-connector {
+  position: absolute;
+  top: 28px; /* half of 56px number circle */
+  left: calc(50% + 28px);
+  right: calc(-50% + 28px);
+  height: 2px;
+  background: var(--lp-border);
+  z-index: 0;
+}
+
+/* ══ LANDING — TESTIMONIALS ════════════════════════════ */
+
+.landing__testimonials {
+  background: var(--lp-page);
+}
+
+.landing__testimonial-card {
+  background: #ffffff;
+  border: 1px solid var(--lp-border);
+  border-radius: 14px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+
+.landing__testimonial-card:hover {
+  box-shadow: 0 8px 28px rgba(26, 43, 60, 0.09);
+  transform: translateY(-2px);
+}
+
+.landing__testimonial-stars {
+  font-size: 1rem;
+  letter-spacing: 2px;
+}
+
+.landing__testimonial-text {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--lp-muted);
+  line-height: 1.75;
+  font-style: italic;
+  flex: 1;
+}
+
+.landing__testimonial-author {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: auto;
+}
+
+.landing__testimonial-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--lp-primary);
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.landing__testimonial-author strong {
+  display: block;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--lp-primary);
+}
+
+.landing__testimonial-author p {
+  margin: 2px 0 0;
+  font-size: 0.78rem;
+  color: var(--lp-muted);
+}
+
+/* ══ LANDING — ABOUT ═══════════════════════════════════ */
+
+.landing__about-icon {
+  font-size: 1.9rem;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+/* ══ LANDING — CTA BAND ════════════════════════════════ */
+
+.landing__cta-band-container {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 72px 32px;
+}
+
+.landing__cta-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  text-align: center;
+}
+
+.landing__cta-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+.landing__cta-download {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.landing__cta-app-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+  font-family: inherit;
+}
+
+.landing__cta-app-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* ══ LANDING — DESIGN IMPROVEMENTS ════════════════════ */
+
+/* Améliore le rendu du hero principal */
+.landing__hero-content h1 {
+  font-size: clamp(2rem, 4.5vw, 3.2rem);
+}
+
+/* Feature cards: icône dans un cercle coloré */
+.landing__feature-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 12px;
+  font-size: 1.5rem;
+  margin-bottom: 14px;
+}
+
+/* Image remplaçant la grille de features */
+.landing__features-image-wrap {
+  display: flex;
+  justify-content: center;
+  margin-top: 48px;
+}
+
+.landing__features-image {
+  width: 100%;
+  max-width: 800px;
+  height: auto;
+  border-radius: 18px;
+  object-fit: cover;
+  box-shadow: 0 8px 40px rgba(26, 43, 60, 0.14);
+}
+
+/* Process photo overlay: amélioration du centrage */
+.landing__process-content {
+  max-width: 640px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+/* ══ DASHBOARD — DESIGN IMPROVEMENTS ══════════════════ */
+
+/* Carte "mission en cours" : accent vert sur le bord gauche */
+.db-current-mission {
+  border-left: 4px solid var(--db-done) !important;
+}
+
+/* Carte "à venir" : accent bleu sur le bord gauche */
+.db-upcoming-card {
+  border-left: 4px solid var(--db-assigned) !important;
+}
+
+/* Titre de section dans le dashboard */
+.db-upcoming__title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.db-upcoming__title::before {
+  content: '';
+  display: block;
+  width: 4px;
+  height: 22px;
+  background: var(--db-assigned);
+  border-radius: 2px;
+}
+
+/* Badge "À venir" avec couleur bleue */
+.db-upcoming-card__badge {
+  background: #eff6ff;
+  color: var(--db-assigned);
+  border: 1px solid #bfdbfe;
+}
+
+/* ══ CARD — AMÉLIORATION ═══════════════════════════════ */
+
+.page--centered .card {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 4px 32px rgba(0, 0, 0, 0.14);
+  padding: 32px;
+  border: none;
+}
+
+.page--centered .card--wide {
+  max-width: 420px;
+  width: 100%;
+}
+
+/* ══ RESPONSIVE ADDITIONS ══════════════════════════════ */
+
+@media (max-width: 900px) {
+  .landing__stats-container {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0;
+  }
+
+  .landing__stat-item {
+    padding: 16px;
+    border-bottom: 1px solid var(--lp-border);
+  }
+
+  .landing__stat-item:nth-child(2n) {
+    border-right: none;
+  }
+
+  .landing__stat-item:nth-last-child(-n+2) {
+    border-bottom: none;
+  }
+
+  .landing__testimonials-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .landing__hero-float {
+    display: none;
+  }
+
+  .landing__features-container,
+  .landing__how-container,
+  .landing__testimonials-container,
+  .landing__about-container {
+    padding: 56px 24px;
+  }
+
+  .landing__cta-band-container {
+    padding: 56px 24px;
+  }
+
+  .landing__step-connector {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .landing__stats-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .landing__download-buttons {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .landing__cta-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .landing__cta-actions .landing__btn-primary,
+  .landing__cta-app-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .landing__features-container,
+  .landing__how-container,
+  .landing__testimonials-container,
+  .landing__about-container {
+    padding: 48px 16px;
+  }
+}
+
+
+/* ══════════════════════════════════════════════════════════
+   DRIVER DASHBOARD — RESPONSIVE COMPLET
+   Mobile-first, tous écrans, design professionnel
+══════════════════════════════════════════════════════════ */
+
+/* ── Page fond et layout de base ────────────────────────── */
+.driver-dashboard {
+  background: #f4f6f9 !important;
+}
+
+.driver-dashboard__page {
+  background: #f4f6f9;
+  padding: 16px 16px 100px !important;
+  max-width: 860px !important;
+  gap: 14px;
+}
+
+/* ── En-tête chauffeur ─────────────────────────────────── */
+.db-header {
+  background: #ffffff;
+  border: 1px solid var(--db-border);
+  border-radius: 12px;
+  padding: 14px 18px;
+}
+
+/* ── Stats strip — 5 colonnes sur desktop ────────────────── */
+.db-stats-strip {
+  grid-template-columns: repeat(5, 1fr);
+}
+
+/* ── Mission en cours — accent vert ─────────────────────── */
+.db-current-mission {
+  border-left: 4px solid var(--db-done) !important;
+}
+
+/* ── Block missions — fond blanc ─────────────────────────── */
+.db-missions {
+  background: #ffffff;
+  border: 1px solid var(--db-border);
+  border-radius: 10px;
+}
+
+/* ── Items de mission — espacement ──────────────────────── */
+.db-mission-list {
+  padding: 10px;
+}
+
+/* ── Alert filtre petits écrans ─────────────────────────── */
+.db-missions__top {
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+/* ── Tabs adaptables ────────────────────────────────────── */
+.db-tabs {
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+/* ════════════════ TABLETTE ≤ 768px ════════════════════════ */
+@media (max-width: 768px) {
+  .driver-dashboard__page {
+    padding: 12px 12px 90px !important;
+    gap: 12px;
+  }
+
+  /* Stats : 3 colonnes en tablette */
+  .db-stats-strip {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+  }
+
+  /* Cacher le connectorroute mais garder les colonnes infos */
+  .db-mission-item {
+    grid-template-columns: auto 1fr auto auto;
+  }
+
+  .db-mission-item__route {
+    display: none;
+  }
+
+  .db-mission-item__title {
+    max-width: 200px;
+  }
+
+  /* Topbar: cacher la tagline */
+  .topbar__tagline {
+    display: none;
+  }
+}
+
+/* ════════════════ MOBILE ≤ 480px ══════════════════════════ */
+@media (max-width: 480px) {
+  .driver-dashboard__page {
+    padding: 10px 10px 85px !important;
+    gap: 10px;
+  }
+
+  /* Stats : 3 colonnes sur mobile */
+  .db-stats-strip {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 5px;
+  }
+
+  .db-stat {
+    padding: 10px 8px 8px;
+  }
+
+  .db-stat__value {
+    font-size: 1.1rem;
+  }
+
+  .db-stat__label {
+    font-size: 0.6rem;
+  }
+
+  /* Mission items : 3 colonnes sans métriques */
+  .db-mission-item {
+    grid-template-columns: auto 1fr auto;
+    padding: 12px 10px;
+    gap: 8px;
+  }
+
+  .db-mission-item__route,
+  .db-mission-item__metrics {
+    display: none;
+  }
+
+  .db-mission-item__title {
+    max-width: 130px;
+    font-size: 0.82rem;
+  }
+
+  .db-mission-item__price {
+    font-size: 0.82rem;
+    min-width: auto;
+  }
+
+  /* Header chauffeur — compact */
+  .db-header {
+    padding: 12px 14px;
+  }
+
+  .db-header__name {
+    font-size: 0.95rem;
+  }
+
+  .db-avatar {
+    width: 38px;
+    height: 38px;
+    font-size: 0.95rem;
+  }
+
+  /* Alerte mission : méta sur 2 colonnes */
+  .incoming-mission-alert__meta {
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+
+  .incoming-mission-alert__actions {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .incoming-mission-alert__actions .button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Modal: infos client/matériau en colonne */
+  .modal-info-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  /* Tabs : scrollable horizontal */
+  .db-tabs {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding-bottom: 2px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .db-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .db-tab {
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  /* Topbar: cacher la nav sur mobile */
+  .topbar__nav {
+    display: none;
+  }
+
+  .topbar {
+    padding: 0 14px;
+  }
+}
+
+/* ════════════════ DESKTOP ≥ 900px ═════════════════════════ */
+@media (min-width: 900px) {
+  .driver-dashboard__page {
+    padding: 20px 24px 100px !important;
+    gap: 16px;
+  }
+
+  /* Stats: toujours 5 colonnes */
+  .db-stats-strip {
+    grid-template-columns: repeat(5, 1fr);
+  }
+
+  /* Mission items : toutes les colonnes visibles */
+  .db-mission-item {
+    grid-template-columns: auto 1fr auto auto auto auto;
+  }
+
+  .db-mission-item__title {
+    max-width: 220px;
+  }
+}
+
+/* ── Bottom nav : toujours visible et bien stylé ──────────── */
+.bottom-nav {
+  background: rgba(255, 255, 255, 0.97) !important;
+  border-top: 1px solid #e3e9f2 !important;
+  box-shadow: 0 -4px 20px rgba(13, 27, 53, 0.08) !important;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.bottom-nav__item {
+  color: #64748b !important;
+  font-weight: 600 !important;
+}
+
+.bottom-nav__item--active {
+  background: #eef4ff !important;
+  color: var(--db-primary) !important;
+}
+
+/* ── Topbar : compacte et propre ────────────────────────── */
+.driver-dashboard .topbar {
+  background: #ffffff !important;
+  border-bottom: 1px solid var(--db-border) !important;
+  box-shadow: 0 1px 8px rgba(26, 43, 60, 0.05) !important;
+  backdrop-filter: none !important;
+}
+
+/* ── Modal : arrondie sur grands écrans ─────────────────── */
+@media (min-width: 640px) {
+  .mission-modal {
+    border-radius: 14px;
+    max-height: 88dvh;
+    max-height: 88vh;
+  }
+
+  .mission-modal::before {
+    display: none;
+  }
+
+  .mission-modal__overlay {
+    align-items: center;
+    padding: 24px;
   }
 }

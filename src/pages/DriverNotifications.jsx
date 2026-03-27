@@ -1,6 +1,5 @@
 import { useMemo, useState } from 'react'
 import { BrandHeader } from '../components/BrandHeader'
-import { BottomNav } from '../components/BottomNav'
 import {
   getDriverNotifications,
   markDriverNotificationsRead,
@@ -62,7 +61,6 @@ export default function DriverNotifications() {
           </div>
         </section>
       </main>
-      <BottomNav />
     </div>
   )
 }

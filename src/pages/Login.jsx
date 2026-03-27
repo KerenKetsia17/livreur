@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth'
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile } from 'firebase/auth'
 import { auth } from '../firebase'
 import { api, handleApiError } from '../api/client'
 import { setCurrentUser } from '../utils/storage'
@@ -41,11 +41,14 @@ export function Login() {
         }
       }
 
+      const resolvedName = name.trim() || authEmail.split('@')[0] || 'Livreur'
       const user = {
         id: auth.currentUser.uid,
-        name: name.trim() || authEmail.split('@')[0] || 'Livreur',
+        name: resolvedName,
         role: 'driver',
       }
+      // Persiste le nom dans Firebase Auth pour que displayName soit toujours disponible
+      await updateProfile(auth.currentUser, { displayName: resolvedName }).catch(() => null)
       setCurrentUser(user)
       setError(null)
 

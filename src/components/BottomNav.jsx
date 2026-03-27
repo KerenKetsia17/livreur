@@ -1,4 +1,5 @@
 import { NavLink } from 'react-router-dom'
+import './BottomNavLayout.css'
 
 const tabs = [
   { label: 'Missions', to: '/driver/missions', icon: '📦' },
